@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -12,6 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
+from game import Actions
 import re
 import testClasses
 import textwrap
@@ -22,6 +23,8 @@ import pacman
 from search import SearchProblem
 
 # helper function for printing solutions in solution files
+
+
 def wrap_solution(solution):
     if type(solution) == type([]):
         return '\n'.join(textwrap.wrap(' '.join(solution)))
@@ -29,28 +32,31 @@ def wrap_solution(solution):
         return str(solution)
 
 
-
-
 def followAction(state, action, problem):
-  for successor1, action1, cost1 in problem.getSuccessors(state):
-    if action == action1: return successor1
-  return None
+    for successor1, action1, cost1 in problem.getSuccessors(state):
+        if action == action1:
+            return successor1
+    return None
+
 
 def followPath(path, problem):
-  state = problem.getStartState()
-  states = [state]
-  for action in path:
-    state = followAction(state, action, problem)
-    states.append(state)
-  return states
+    state = problem.getStartState()
+    states = [state]
+    for action in path:
+        state = followAction(state, action, problem)
+        states.append(state)
+    return states
+
 
 def checkSolution(problem, path):
-  state = problem.getStartState()
-  for action in path:
-    state = followAction(state, action, problem)
-  return problem.isGoalState(state)
+    state = problem.getStartState()
+    for action in path:
+        state = followAction(state, action, problem)
+    return problem.isGoalState(state)
 
 # Search problem on a plain graph
+
+
 class GraphSearch(SearchProblem):
 
     # Read in the state graph; define start/end states, edges and costs
@@ -59,15 +65,17 @@ class GraphSearch(SearchProblem):
         lines = graph_text.split('\n')
         r = re.match('start_state:(.*)', lines[0])
         if r == None:
-            print ("Broken graph:")
-            print ('"""%s"""' % graph_text)
-            raise Exception("GraphSearch graph specification start_state not found or incorrect on line:" + l)
+            print("Broken graph:")
+            print('"""%s"""' % graph_text)
+            raise Exception(
+                "GraphSearch graph specification start_state not found or incorrect on line:" + l)
         self.start_state = r.group(1).strip()
         r = re.match('goal_states:(.*)', lines[1])
         if r == None:
-            print ("Broken graph:")
-            print ('"""%s"""' % graph_text)
-            raise Exception("GraphSearch graph specification goal_states not found or incorrect on line:" + l)
+            print("Broken graph:")
+            print('"""%s"""' % graph_text)
+            raise Exception(
+                "GraphSearch graph specification goal_states not found or incorrect on line:" + l)
         goals = r.group(1).split()
         self.goals = map(str.strip, goals)
         self.successors = {}
@@ -80,11 +88,13 @@ class GraphSearch(SearchProblem):
             elif len(l.split()) == 4:
                 start, action, next_state, cost = l.split()
             else:
-                print ("Broken graph:")
-                print ('"""%s"""' % graph_text)
-                raise Exception("Invalid line in GraphSearch graph specification on line:" + l)
+                print("Broken graph:")
+                print('"""%s"""' % graph_text)
+                raise Exception(
+                    "Invalid line in GraphSearch graph specification on line:" + l)
             cost = float(cost)
-            self.orderedSuccessorTuples.append((start, action, next_state, cost))
+            self.orderedSuccessorTuples.append(
+                (start, action, next_state, cost))
             all_states.add(start)
             all_states.add(next_state)
             if start not in self.successors:
@@ -120,7 +130,7 @@ class GraphSearch(SearchProblem):
                     total_cost += cost
                     match = True
             if not match:
-                print ('invalid action sequence')
+                print('invalid action sequence')
                 sys.exit(1)
         return total_cost
 
@@ -132,10 +142,9 @@ class GraphSearch(SearchProblem):
         print(self.successors)
         edges = ["%s %s %s %s" % t for t in self.orderedSuccessorTuples]
         return \
-"""start_state: %s
+            """start_state: %s
 goal_states: %s
 %s""" % (self.start_state, " ".join(self.goals), "\n".join(edges))
-
 
 
 def parseHeuristic(heuristicText):
@@ -143,8 +152,8 @@ def parseHeuristic(heuristicText):
     for line in heuristicText.split('\n'):
         tokens = line.split()
         if len(tokens) != 2:
-            print ("Broken Heuristic:")
-            print ('"""%s"""' % graph_text)
+            print("Broken Heuristic:")
+            print('"""%s"""' % graph_text)
             raise Exception("GraphSearch heuristic specification broken:" + l)
         state, h = tokens
         heuristic[state] = float(h)
@@ -154,9 +163,10 @@ def parseHeuristic(heuristicText):
             return heuristic[state]
         else:
             pp = pprint.PrettyPrinter(indent=4)
-            print ("Heuristic:")
+            print("Heuristic:")
             pp.pprint(heuristic)
-            raise Exception("Graph heuristic called with invalid state: " + str(state))
+            raise Exception(
+                "Graph heuristic called with invalid state: " + str(state))
 
     return graphHeuristic
 
@@ -168,7 +178,8 @@ class GraphSearchTest(testClasses.TestCase):
         self.graph_text = testDict['graph']
         self.alg = testDict['algorithm']
         self.diagram = testDict['diagram']
-        self.exactExpansionOrder = testDict.get('exactExpansionOrder', 'True').lower() == "true"
+        self.exactExpansionOrder = testDict.get(
+            'exactExpansionOrder', 'True').lower() == "true"
         if 'heuristic' in testDict:
             self.heuristic = parseHeuristic(testDict['heuristic'])
         else:
@@ -195,8 +206,10 @@ class GraphSearchTest(testClasses.TestCase):
     def execute(self, grades, moduleDict, solutionDict):
         search = moduleDict['search']
         searchAgents = moduleDict['searchAgents']
-        gold_solution = [str.split(solutionDict['solution']), str.split(solutionDict['rev_solution'])]
-        gold_expanded_states = [str.split(solutionDict['expanded_states']), str.split(solutionDict['rev_expanded_states'])]
+        gold_solution = [str.split(solutionDict['solution']), str.split(
+            solutionDict['rev_solution'])]
+        gold_expanded_states = [str.split(solutionDict['expanded_states']), str.split(
+            solutionDict['rev_expanded_states'])]
 
         solution, expanded_states, error = self.getSolInfo(search)
         if error != None:
@@ -215,12 +228,16 @@ class GraphSearchTest(testClasses.TestCase):
             for line in self.diagram.split('\n'):
                 grades.addMessage('\t    %s' % (line,))
             grades.addMessage('\tstudent solution:\t\t%s' % solution)
-            grades.addMessage('\tstudent expanded_states:\t%s' % expanded_states)
+            grades.addMessage('\tstudent expanded_states:\t%s' %
+                              expanded_states)
             grades.addMessage('')
             grades.addMessage('\tcorrect solution:\t\t%s' % gold_solution[0])
-            grades.addMessage('\tcorrect expanded_states:\t%s' % gold_expanded_states[0])
-            grades.addMessage('\tcorrect rev_solution:\t\t%s' % gold_solution[1])
-            grades.addMessage('\tcorrect rev_expanded_states:\t%s' % gold_expanded_states[1])
+            grades.addMessage('\tcorrect expanded_states:\t%s' %
+                              gold_expanded_states[0])
+            grades.addMessage('\tcorrect rev_solution:\t\t%s' %
+                              gold_solution[1])
+            grades.addMessage('\tcorrect rev_expanded_states:\t%s' %
+                              gold_expanded_states[1])
             return False
 
     def writeSolution(self, moduleDict, filePath):
@@ -229,19 +246,22 @@ class GraphSearchTest(testClasses.TestCase):
         # open file and write comments
         handle = open(filePath, 'w')
         handle.write('# This is the solution file for %s.\n' % self.path)
-        handle.write('# This solution is designed to support both right-to-left\n')
+        handle.write(
+            '# This solution is designed to support both right-to-left\n')
         handle.write('# and left-to-right implementations.\n')
 
         # write forward solution
         solution, expanded_states, error = self.getSolInfo(search)
-        if error != None: raise Exception("Error in solution code: %s" % error)
+        if error != None:
+            raise Exception("Error in solution code: %s" % error)
         handle.write('solution: "%s"\n' % ' '.join(solution))
         handle.write('expanded_states: "%s"\n' % ' '.join(expanded_states))
 
         # reverse and write backwards solution
         search.REVERSE_PUSH = not search.REVERSE_PUSH
         solution, expanded_states, error = self.getSolInfo(search)
-        if error != None: raise Exception("Error in solution code: %s" % error)
+        if error != None:
+            raise Exception("Error in solution code: %s" % error)
         handle.write('rev_solution: "%s"\n' % ' '.join(solution))
         handle.write('rev_expanded_states: "%s"\n' % ' '.join(expanded_states))
 
@@ -249,7 +269,6 @@ class GraphSearchTest(testClasses.TestCase):
         search.REVERSE_PUSH = not search.REVERSE_PUSH
         handle.close()
         return True
-
 
 
 class PacmanSearchTest(testClasses.TestCase):
@@ -263,9 +282,9 @@ class PacmanSearchTest(testClasses.TestCase):
         # TODO: sensible to have defaults like this?
         self.leewayFactor = float(testDict.get('leewayFactor', '1'))
         self.costFn = eval(testDict.get('costFn', 'None'))
-        self.searchProblemClassName = testDict.get('searchProblemClass', 'PositionSearchProblem')
+        self.searchProblemClassName = testDict.get(
+            'searchProblemClass', 'PositionSearchProblem')
         self.heuristicName = testDict.get('heuristic', None)
-
 
     def getSolInfo(self, search, searchAgents):
         alg = getattr(search, self.alg)
@@ -278,7 +297,8 @@ class PacmanSearchTest(testClasses.TestCase):
         if self.costFn != None:
             problemOptions['costFn'] = self.costFn
         problem = problemClass(start_state, **problemOptions)
-        heuristic = getattr(searchAgents, self.heuristicName) if self.heuristicName != None else None
+        heuristic = getattr(
+            searchAgents, self.heuristicName) if self.heuristicName != None else None
 
         if heuristic != None:
             solution = alg(problem, heuristic)
@@ -299,8 +319,10 @@ class PacmanSearchTest(testClasses.TestCase):
     def execute(self, grades, moduleDict, solutionDict):
         search = moduleDict['search']
         searchAgents = moduleDict['searchAgents']
-        gold_solution = [str.split(solutionDict['solution']), str.split(solutionDict['rev_solution'])]
-        gold_expanded = max(int(solutionDict['expanded_nodes']), int(solutionDict['rev_expanded_nodes']))
+        gold_solution = [str.split(solutionDict['solution']), str.split(
+            solutionDict['rev_solution'])]
+        gold_expanded = max(int(solutionDict['expanded_nodes']), int(
+            solutionDict['rev_expanded_nodes']))
 
         solution, expanded, error = self.getSolInfo(search, searchAgents)
         if error != None:
@@ -314,20 +336,27 @@ class PacmanSearchTest(testClasses.TestCase):
             grades.addMessage('FAIL: %s' % self.path)
             grades.addMessage('Solution not correct.')
             grades.addMessage('\tstudent solution length: %s' % len(solution))
-            grades.addMessage('\tstudent solution:\n%s' % wrap_solution(solution))
+            grades.addMessage('\tstudent solution:\n%s' %
+                              wrap_solution(solution))
             grades.addMessage('')
-            grades.addMessage('\tcorrect solution length: %s' % len(gold_solution[0]))
-            grades.addMessage('\tcorrect (reversed) solution length: %s' % len(gold_solution[1]))
-            grades.addMessage('\tcorrect solution:\n%s' % wrap_solution(gold_solution[0]))
-            grades.addMessage('\tcorrect (reversed) solution:\n%s' % wrap_solution(gold_solution[1]))
+            grades.addMessage('\tcorrect solution length: %s' %
+                              len(gold_solution[0]))
+            grades.addMessage(
+                '\tcorrect (reversed) solution length: %s' % len(gold_solution[1]))
+            grades.addMessage('\tcorrect solution:\n%s' %
+                              wrap_solution(gold_solution[0]))
+            grades.addMessage('\tcorrect (reversed) solution:\n%s' %
+                              wrap_solution(gold_solution[1]))
             return False
 
         if expanded > self.leewayFactor * gold_expanded and expanded > gold_expanded + 1:
             grades.addMessage('FAIL: %s' % self.path)
-            grades.addMessage('Too many node expanded; are you expanding nodes twice?')
+            grades.addMessage(
+                'Too many node expanded; are you expanding nodes twice?')
             grades.addMessage('\tstudent nodes expanded: %s' % expanded)
             grades.addMessage('')
-            grades.addMessage('\tcorrect nodes expanded: %s (leewayFactor %s)' % (gold_expanded, self.leewayFactor))
+            grades.addMessage('\tcorrect nodes expanded: %s (leewayFactor %s)' % (
+                gold_expanded, self.leewayFactor))
             return False
 
         grades.addMessage('PASS: %s' % self.path)
@@ -336,27 +365,30 @@ class PacmanSearchTest(testClasses.TestCase):
         grades.addMessage('\tnodes expanded:\t\t%s' % expanded)
         return True
 
-
     def writeSolution(self, moduleDict, filePath):
         search = moduleDict['search']
         searchAgents = moduleDict['searchAgents']
         # open file and write comments
         handle = open(filePath, 'w')
         handle.write('# This is the solution file for %s.\n' % self.path)
-        handle.write('# This solution is designed to support both right-to-left\n')
+        handle.write(
+            '# This solution is designed to support both right-to-left\n')
         handle.write('# and left-to-right implementations.\n')
-        handle.write('# Number of nodes expanded must be with a factor of %s of the numbers below.\n' % self.leewayFactor)
+        handle.write(
+            '# Number of nodes expanded must be with a factor of %s of the numbers below.\n' % self.leewayFactor)
 
         # write forward solution
         solution, expanded, error = self.getSolInfo(search, searchAgents)
-        if error != None: raise Exception("Error in solution code: %s" % error)
+        if error != None:
+            raise Exception("Error in solution code: %s" % error)
         handle.write('solution: """\n%s\n"""\n' % wrap_solution(solution))
         handle.write('expanded_nodes: "%s"\n' % expanded)
 
         # write backward solution
         search.REVERSE_PUSH = not search.REVERSE_PUSH
         solution, expanded, error = self.getSolInfo(search, searchAgents)
-        if error != None: raise Exception("Error in solution code: %s" % error)
+        if error != None:
+            raise Exception("Error in solution code: %s" % error)
         handle.write('rev_solution: """\n%s\n"""\n' % wrap_solution(solution))
         handle.write('rev_expanded_nodes: "%s"\n' % expanded)
 
@@ -366,17 +398,17 @@ class PacmanSearchTest(testClasses.TestCase):
         return True
 
 
-from game import Actions
 def getStatesFromPath(start, path):
     "Returns the list of states visited along the path"
     vis = [start]
     curr = start
     for a in path:
-        x,y = curr
+        x, y = curr
         dx, dy = Actions.directionToVector(a)
         curr = (int(x + dx), int(y + dy))
         vis.append(curr)
     return vis
+
 
 class CornerProblemTest(testClasses.TestCase):
 
@@ -396,7 +428,8 @@ class CornerProblemTest(testClasses.TestCase):
         gameState.initialize(lay, 0)
         visited = getStatesFromPath(gameState.getPacmanPosition(), path)
         top, right = gameState.getWalls().height-2, gameState.getWalls().width-2
-        missedCorners = [p for p in ((1,1), (1,top), (right, 1), (right, top)) if p not in visited]
+        missedCorners = [p for p in (
+            (1, 1), (1, top), (right, 1), (right, top)) if p not in visited]
 
         return path, missedCorners
 
@@ -408,7 +441,8 @@ class CornerProblemTest(testClasses.TestCase):
 
         if type(solution) != type([]):
             grades.addMessage('FAIL: %s' % self.path)
-            grades.addMessage('The result must be a list. (Instead, it is %s)' % type(solution))
+            grades.addMessage(
+                'The result must be a list. (Instead, it is %s)' % type(solution))
             return False
 
         if len(missedCorners) != 0:
@@ -445,8 +479,6 @@ class CornerProblemTest(testClasses.TestCase):
 
         handle.write('solution_length: "%s"\n' % length)
         handle.close()
-
-
 
 
 # template = """class: "HeuristicTest"
@@ -502,8 +534,10 @@ class HeuristicTest(testClasses.TestCase):
 
         for succ, action, stepCost in problem.getSuccessors(state):
             h1 = heuristic(succ, problem)
-            if h1 < 0: return False, 'Heuristic failed H >= 0 test'
-            if h0 - h1 > stepCost: return False, 'Heuristic failed consistency test'
+            if h1 < 0:
+                return False, 'Heuristic failed H >= 0 test'
+            if h0 - h1 > stepCost:
+                return False, 'Heuristic failed consistency test'
 
         return True, ''
 
@@ -513,7 +547,8 @@ class HeuristicTest(testClasses.TestCase):
         solutionCost = int(solutionDict['solution_cost'])
         problem, state, heuristic = self.setupProblem(searchAgents)
 
-        passed, message = self.checkHeuristic(heuristic, problem, state, solutionCost)
+        passed, message = self.checkHeuristic(
+            heuristic, problem, state, solutionCost)
 
         if not passed:
             grades.addMessage('FAIL: %s' % self.path)
@@ -542,10 +577,6 @@ class HeuristicTest(testClasses.TestCase):
         return True
 
 
-
-
-
-
 class HeuristicGrade(testClasses.TestCase):
 
     def __init__(self, question, testDict):
@@ -555,7 +586,8 @@ class HeuristicGrade(testClasses.TestCase):
         self.searchProblemClassName = testDict['searchProblemClass']
         self.heuristicName = testDict['heuristic']
         self.basePoints = int(testDict['basePoints'])
-        self.thresholds = [int(t) for t in testDict['gradingThresholds'].split()]
+        self.thresholds = [int(t)
+                           for t in testDict['gradingThresholds'].split()]
 
     def setupProblem(self, searchAgents):
         lay = layout.Layout([l.strip() for l in self.layoutText.split('\n')])
@@ -567,7 +599,6 @@ class HeuristicGrade(testClasses.TestCase):
         heuristic = getattr(searchAgents, self.heuristicName)
 
         return problem, state, heuristic
-
 
     def execute(self, grades, moduleDict, solutionDict):
         search = moduleDict['search']
@@ -599,16 +630,12 @@ class HeuristicGrade(testClasses.TestCase):
 
         return True
 
-
     def writeSolution(self, moduleDict, filePath):
         handle = open(filePath, 'w')
         handle.write('# This is the solution file for %s.\n' % self.path)
         handle.write('# File intentionally blank.\n')
         handle.close()
         return True
-
-
-
 
 
 # template = """class: "ClosestDotTest"
@@ -646,7 +673,8 @@ class ClosestDotTest(testClasses.TestCase):
 
         if type(solution) != type([]):
             grades.addMessage('FAIL: %s' % self.path)
-            grades.addMessage('\tThe result must be a list. (Instead, it is %s)' % type(solution))
+            grades.addMessage(
+                '\tThe result must be a list. (Instead, it is %s)' % type(solution))
             return False
 
         if len(solution) != gold_length:
@@ -678,8 +706,6 @@ class ClosestDotTest(testClasses.TestCase):
         handle.write('solution_length: "%s"\n' % length)
         handle.close()
         return True
-
-
 
 
 class CornerHeuristicSanity(testClasses.TestCase):
@@ -727,14 +753,15 @@ class CornerHeuristicSanity(testClasses.TestCase):
                 grades.addMessage('FAIL: inconsistent heuristic')
                 return False
             # cornerPosH
-            if h0 < 0 or h1 <0:
+            if h0 < 0 or h1 < 0:
                 grades.addMessage('FAIL: non-positive heuristic')
                 return False
         # cornerGoalH
         if heuristics[len(heuristics) - 1] != 0:
             grades.addMessage('FAIL: heuristic non-zero at goal')
             return False
-        grades.addMessage('PASS: heuristic value less than true cost at start state')
+        grades.addMessage(
+            'PASS: heuristic value less than true cost at start state')
         return True
 
     def writeSolution(self, moduleDict, filePath):
@@ -742,9 +769,12 @@ class CornerHeuristicSanity(testClasses.TestCase):
         searchAgents = moduleDict['searchAgents']
         # write comment
         handle = open(filePath, 'w')
-        handle.write('# In order for a heuristic to be admissible, the value\n')
-        handle.write('# of the heuristic must be less at each state than the\n')
-        handle.write('# true cost of the optimal path from that state to a goal.\n')
+        handle.write(
+            '# In order for a heuristic to be admissible, the value\n')
+        handle.write(
+            '# of the heuristic must be less at each state than the\n')
+        handle.write(
+            '# true cost of the optimal path from that state to a goal.\n')
 
         # solve problem and write solution
         lay = layout.Layout([l.strip() for l in self.layout_text.split('\n')])
@@ -756,7 +786,6 @@ class CornerHeuristicSanity(testClasses.TestCase):
         handle.write('path: """\n%s\n"""\n' % wrap_solution(solution))
         handle.close()
         return True
-
 
 
 class CornerHeuristicPacman(testClasses.TestCase):
@@ -793,9 +822,11 @@ class CornerHeuristicPacman(testClasses.TestCase):
                 points += 1
         grades.addPoints(points)
         if points >= len(thresholds):
-            grades.addMessage('PASS: Heuristic resulted in expansion of %d nodes' % expanded)
+            grades.addMessage(
+                'PASS: Heuristic resulted in expansion of %d nodes' % expanded)
         else:
-            grades.addMessage('FAIL: Heuristic resulted in expansion of %d nodes' % expanded)
+            grades.addMessage(
+                'FAIL: Heuristic resulted in expansion of %d nodes' % expanded)
         return True
 
     def writeSolution(self, moduleDict, filePath):
@@ -803,8 +834,10 @@ class CornerHeuristicPacman(testClasses.TestCase):
         searchAgents = moduleDict['searchAgents']
         # write comment
         handle = open(filePath, 'w')
-        handle.write('# This solution file specifies the length of the optimal path\n')
-        handle.write('# as well as the thresholds on number of nodes expanded to be\n')
+        handle.write(
+            '# This solution file specifies the length of the optimal path\n')
+        handle.write(
+            '# as well as the thresholds on number of nodes expanded to be\n')
         handle.write('# used in scoring.\n')
 
         # solve problem and write solution
@@ -818,4 +851,3 @@ class CornerHeuristicPacman(testClasses.TestCase):
         handle.write('thresholds: "2000 1600 1200"\n')
         handle.close()
         return True
-

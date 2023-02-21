@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+
 
 class SearchProblem:
     """
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem: SearchProblem):
     """
@@ -88,7 +90,6 @@ def depthFirstSearch(problem: SearchProblem):
     """
     "*** YOUR CODE HERE ***"
 
-
     class DFSSearchProblemNode:
         """
         A node in the search tree. Contains a pointer to the parent
@@ -96,15 +97,16 @@ def depthFirstSearch(problem: SearchProblem):
         state for this node. Note that if a state is arrived at by
         two paths, then there are two nodes with the same state.  Also
         includes the action that got us to this state.
-        
+
 
         No need to include the cost in this node implementation, as we are using DFS
         """
+
         def __init__(self, state, parent, action):
             self.state = state
             self.parent = parent
             self.action = action
-        
+
         def get_path(self):
             """
             Returns a list of actions that got us to this node
@@ -116,16 +118,16 @@ def depthFirstSearch(problem: SearchProblem):
                 node = node.parent
             path.reverse()
             return path
-        
+
         def __eq__(self, other):
             return self.state == other.state
-        
+
         def __hash__(self):
             return hash(self.state)
-        
+
         def __str__(self):
             return str(self.state)
-    
+
     # Initialize the frontier with the start state
     frontier = util.Stack()
     frontier.push(DFSSearchProblemNode(problem.getStartState(), None, None))
@@ -145,21 +147,25 @@ def depthFirstSearch(problem: SearchProblem):
             # Add the node to the explored set
             explored.add(node.state)
             # Expand the node, adding the resulting nodes to the frontier
-            for child_state, action_to_child, cost_of_action  in problem.getSuccessors(node.state):
-                frontier.push(DFSSearchProblemNode(child_state, node, action_to_child))
-    
+            for child_state, action_to_child, cost_of_action in problem.getSuccessors(node.state):
+                frontier.push(DFSSearchProblemNode(
+                    child_state, node, action_to_child))
+
     # If the frontier is empty then return failure
     return []
+
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -167,6 +173,7 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
