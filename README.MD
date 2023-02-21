@@ -5,7 +5,7 @@
 <h3 align="center"> CSC460 - Artificial Intelligence ©️</h3>
 <h5 align="center"> Project Phase 1 </h5>
 
-<p align="center"> 
+<p align="center">
   <img src="./gifs/big.gif" alt="Animated gif pacman game" height="282px" width="500" style="border-radius:2rem">
 </p>
 
@@ -33,7 +33,7 @@ This code implements general search algorithms such as depth-first, breadth-firs
 
 <h1 id="q1">🚩 Question 1: Finding Fixed Food Dot using Depth First Search</h1>
 
-<p align="center"> 
+<p align="center">
 <img src="./gifs/dfs.gif" width="500"></img>
 </p>
 In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman 1.
