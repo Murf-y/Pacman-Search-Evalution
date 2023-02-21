@@ -6,7 +6,7 @@
 <h5 align="center"> Project Phase 1 </h5>
 
 <p align="center"> 
-  <img src="./gifs/big.gif" alt="Animated gif pacman game" height="282px" width="550" style="border-radius:2rem">
+  <img src="./gifs/big.gif" alt="Animated gif pacman game" height="282px" width="500" style="border-radius:2rem">
 </p>
 
 <br>
@@ -27,11 +27,14 @@
 </ol>
 
 <h1 id="intro">Introduction 📝</h1>
+This code implements general search algorithms such as depth-first, breadth-first, uniform cost, and A* to optimize Pacman's navigation in a maze world, enabling him to efficiently collect food and reach specific locations.
+
+<br>
 
 <h1 id="q1">🚩 Question 1: Finding Fixed Food Dot using Depth First Search</h1>
 
 <p align="center"> 
-<video src="./gifs/dfs_medium_maze.mp4" width="500"></video>
+<img src="./gifs/dfs.gif" width="500"></img>
 </p>
 In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman 1.
 We implemented the Depth First Search algorithm in <code>search.py</code> in the corresponding function.
@@ -95,7 +98,7 @@ Pacman emerges victorious! Score: 380
 </li>
 
 <hr>
-<pre>$ python pacman.py -l tinyMaze -p SearchAgent</pre>
+<pre>$ python pacman.py -l bigMaze -p SearchAgent</pre>
 
 <li>
 Path found with total cost of 210 in 0.0 seconds
