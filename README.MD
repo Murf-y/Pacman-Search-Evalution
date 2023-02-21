@@ -30,7 +30,9 @@
 
 <h1 id="q1">🚩 Question 1: Finding Fixed Food Dot using Depth First Search</h1>
 
-<video src="./gifs/dfs_medium_maze.mp4"></video>
+<p align="center"> 
+<video src="./gifs/dfs_medium_maze.mp4" width="500"></video>
+</p>
 
 We implemented the Depth First Search algorithm in <code>search.py</code> in the corresponding function.
 
