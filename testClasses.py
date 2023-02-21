@@ -4,14 +4,12 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-
 # import modules from python standard library
 import inspect
 import re
@@ -24,11 +22,11 @@ import sys
 class Question(object):
 
     def raiseNotDefined(self):
-        print('Method not implemented: %s' % inspect.stack()[1][3])
+        print("Method not implemented: %s" % inspect.stack()[1][3])
         sys.exit(1)
 
     def __init__(self, questionDict, display):
-        self.maxPoints = int(questionDict['max_points'])
+        self.maxPoints = int(questionDict["max_points"])
         self.testCases = []
         self.display = display
 
@@ -46,7 +44,10 @@ class Question(object):
     def execute(self, grades):
         self.raiseNotDefined()
 
+
 # Question in which all test cases must be passed in order to receive credit
+
+
 class PassAllTestsQuestion(Question):
 
     def execute(self, grades):
@@ -61,10 +62,12 @@ class PassAllTestsQuestion(Question):
         else:
             grades.assignFullCredit()
 
+
 class ExtraCreditPassAllTestsQuestion(Question):
+
     def __init__(self, questionDict, display):
         Question.__init__(self, questionDict, display)
-        self.extraPoints = int(questionDict['extra_points'])
+        self.extraPoints = int(questionDict["extra_points"])
 
     def execute(self, grades):
         # TODO: is this the right way to use grades?  The autograder doesn't seem to use it.
@@ -79,8 +82,11 @@ class ExtraCreditPassAllTestsQuestion(Question):
             grades.assignFullCredit()
             grades.addPoints(self.extraPoints)
 
+
 # Question in which predict credit is given for test cases with a ``points'' property.
 # All other tests are mandatory and must be passed.
+
+
 class HackedPartialCreditQuestion(Question):
 
     def execute(self, grades):
@@ -92,11 +98,12 @@ class HackedPartialCreditQuestion(Question):
         for testCase, f in self.testCases:
             testResult = f(grades)
             if "points" in testCase.testDict:
-                if testResult: points += float(testCase.testDict["points"])
+                if testResult:
+                    points += float(testCase.testDict["points"])
             else:
                 passed = passed and testResult
 
-        ## FIXME: Below terrible hack to match q3's logic
+        # FIXME: Below terrible hack to match q3's logic
         if int(points) == self.maxPoints and not passed:
             grades.assignZeroCredit()
         else:
@@ -116,6 +123,7 @@ class Q6PartialCreditQuestion(Question):
         if False in results:
             grades.assignZeroCredit()
 
+
 class PartialCreditQuestion(Question):
     """Fails any test which returns False, otherwise doesn't effect the grades object.
     Partial credit tests will add the required points."""
@@ -130,7 +138,6 @@ class PartialCreditQuestion(Question):
                 return False
 
 
-
 class NumberPassedQuestion(Question):
     """Grade is the number of test cases passed."""
 
@@ -138,14 +145,11 @@ class NumberPassedQuestion(Question):
         grades.addPoints([f(grades) for _, f in self.testCases].count(True))
 
 
-
-
-
 # Template modeling a generic test case
 class TestCase(object):
 
     def raiseNotDefined(self):
-        print('Method not implemented: %s' % inspect.stack()[1][3])
+        print("Method not implemented: %s" % inspect.stack()[1][3])
         sys.exit(1)
 
     def getPath(self):
@@ -154,7 +158,7 @@ class TestCase(object):
     def __init__(self, question, testDict):
         self.question = question
         self.testDict = testDict
-        self.path = testDict['path']
+        self.path = testDict["path"]
         self.messages = []
 
     def __str__(self):
@@ -174,15 +178,15 @@ class TestCase(object):
     # to get a nice hierarchical project - question - test structure,
     # then these should be moved into Question proper.
     def testPass(self, grades):
-        grades.addMessage('PASS: %s' % (self.path,))
+        grades.addMessage("PASS: %s" % (self.path, ))
         for line in self.messages:
-            grades.addMessage('    %s' % (line,))
+            grades.addMessage("    %s" % (line, ))
         return True
 
     def testFail(self, grades):
-        grades.addMessage('FAIL: %s' % (self.path,))
+        grades.addMessage("FAIL: %s" % (self.path, ))
         for line in self.messages:
-            grades.addMessage('    %s' % (line,))
+            grades.addMessage("    %s" % (line, ))
         return False
 
     # This should really be question level?
@@ -192,15 +196,19 @@ class TestCase(object):
         extraCredit = max(0, points - maxPoints)
         regularCredit = points - extraCredit
 
-        grades.addMessage('%s: %s (%s of %s points)' % ("PASS" if points >= maxPoints else "FAIL", self.path, regularCredit, maxPoints))
+        grades.addMessage("%s: %s (%s of %s points)" % (
+            "PASS" if points >= maxPoints else "FAIL",
+            self.path,
+            regularCredit,
+            maxPoints,
+        ))
         if extraCredit > 0:
-            grades.addMessage('EXTRA CREDIT: %s points' % (extraCredit,))
+            grades.addMessage("EXTRA CREDIT: %s points" % (extraCredit, ))
 
         for line in self.messages:
-            grades.addMessage('    %s' % (line,))
+            grades.addMessage("    %s" % (line, ))
 
         return True
 
     def addMessage(self, message):
-        self.messages.extend(message.split('\n'))
-
+        self.messages.extend(message.split("\n"))
