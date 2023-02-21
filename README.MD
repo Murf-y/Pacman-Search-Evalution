@@ -29,6 +29,9 @@
 <h1 id="intro">Introduction 📝</h1>
 
 <h1 id="q1">🚩 Question 1: Finding Fixed Food Dot using Depth First Search</h1>
+
+<video src="./gifs/dfs_medium_maze.mp4"></video>
+
 We implemented the Depth First Search algorithm in <code>search.py</code> in the corresponding function.
 
 We create a <code>DFSSearchProblemNode</code> class to store the state | action | parent, of each state in the problem.
@@ -64,7 +67,7 @@ goal?
 
 <h2>Test Cases</h2>
 
-<pre>python pacman.py -l tinyMaze -p SearchAgent</pre>
+<pre>$ python pacman.py -l tinyMaze -p SearchAgent</pre>
 
 <li>
 Path found with total cost of 10 in 0.0 seconds
@@ -77,7 +80,7 @@ Pacman emerges victorious! Score: 500
 </li>
 
 <hr>
-<pre>python pacman.py -l mediumMaze -p SearchAgent</pre>
+<pre>$ python pacman.py -l mediumMaze -p SearchAgent</pre>
 
 <li>
 Path found with total cost of 130 in 0.0 seconds
@@ -90,7 +93,7 @@ Pacman emerges victorious! Score: 380
 </li>
 
 <hr>
-<pre>python pacman.py -l tinyMaze -p SearchAgent</pre>
+<pre>$ python pacman.py -l tinyMaze -p SearchAgent</pre>
 
 <li>
 Path found with total cost of 210 in 0.0 seconds
