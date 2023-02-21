@@ -33,7 +33,7 @@
 <p align="center"> 
 <video src="./gifs/dfs_medium_maze.mp4" width="500"></video>
 </p>
-
+In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman 1.
 We implemented the Depth First Search algorithm in <code>search.py</code> in the corresponding function.
 
 We create a <code>DFSSearchProblemNode</code> class to store the state | action | parent, of each state in the problem.
