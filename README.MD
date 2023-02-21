@@ -334,6 +334,54 @@ Pacman emerges victorious! Score: 300
 
 <br>
 <br>
+<br>
+<h2>Answers to Questions:</h2>
+<ol>
+    <li>
+        <strong>
+        What happens on <code>openMaze</code> for the various search
+strategies?
+        </strong>
+        <ul>
+            <li> DFS: <br>
+                DFS is not optimal, it will not find the shortest path to the goal, it will find the first path to the goal. <br>
+                <ul>
+                    <li>Path found with total cost of 298 in 0.0 seconds </li>
+                    <li>Search nodes expanded: 576</li>
+                    <li>Pacman emerges victorious! Score: 212</li>
+                </ul> 
+            </li>
+            <li> BFS: <br>
+                BFS is optimal, it will find the shortest path to the goal. <br>
+                <ul>
+                    <li>Path found with total cost of 54 in 0.0 seconds </li>
+                    <li>Search nodes expanded: 682</li>
+                    <li>Pacman emerges victorious! Score: 456</li>
+                </ul> 
+            </li>
+            <li> UCS: <br>
+                UCS is optimal, it will find the shortest path to the goal. <br>
+                <ul>
+                    <li>Path found with total cost of 54 in 0.0 seconds </li>
+                    <li>Search nodes expanded: 682</li>
+                    <li>Pacman emerges victorious! Score: 456</li>
+                </ul> 
+            </li>
+            <li> A* <br>
+                A* is optimal, it will find the shortest path to the goal. <br>
+                <ul>
+                    <li>Path found with total cost of 54 in 0.0 seconds </li>
+                    <li>Search nodes expanded: 550</li>
+                    <li>Pacman emerges victorious! Score: 456</li>
+                </ul> 
+            </li>
+        </ul>
+    </li>
+
+</ol>
+<br>
+<br>
+<br>
 
 <h1 id="q5">🚩 Question 5: Finding All the Corners</h1>
 <h1 id="q6">🚩 Question 6: Corners Problem: Heuristic</h1>
