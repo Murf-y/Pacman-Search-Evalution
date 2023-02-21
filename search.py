@@ -89,7 +89,7 @@ def depthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
 
 
-    class DFSSearchProblemNode:
+    class DFSNode:
         """
         A node in the search tree. Contains a pointer to the parent
         (the node that this is a successor of) and to the actual
@@ -128,7 +128,7 @@ def depthFirstSearch(problem: SearchProblem):
     
     # Initialize the frontier with the start state
     frontier = util.Stack()
-    frontier.push(DFSSearchProblemNode(problem.getStartState(), None, None))
+    frontier.push(DFSNode(problem.getStartState(), None, None))
 
     # Initialize the explored set to be empty
     explored = set()
@@ -146,7 +146,7 @@ def depthFirstSearch(problem: SearchProblem):
             explored.add(node.state)
             # Expand the node, adding the resulting nodes to the frontier
             for child_state, action_to_child, cost_of_action  in problem.getSuccessors(node.state):
-                frontier.push(DFSSearchProblemNode(child_state, node, action_to_child))
+                frontier.push(DFSNode(child_state, node, action_to_child))
     
     # If the frontier is empty then return failure
     return []
@@ -155,7 +155,7 @@ def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
 
-    class BFSSearchProblemNode:
+    class BFSNode:
         """
         A node in the search tree. Contains a pointer to the parent
         (the node that this is a successor of) and to the actual
@@ -195,7 +195,7 @@ def breadthFirstSearch(problem: SearchProblem):
     # Initialize the frontier with the start state
     frontier = util.Queue()
 
-    frontier.push(BFSSearchProblemNode(problem.getStartState(), None, None))
+    frontier.push(BFSNode(problem.getStartState(), None, None))
 
     # Initialize the explored set to be empty
     explored = set()
@@ -213,7 +213,7 @@ def breadthFirstSearch(problem: SearchProblem):
             explored.add(node.state)
             # Expand the node, adding the resulting nodes to the frontier
             for child_state, action_to_child, cost_of_action  in problem.getSuccessors(node.state):
-                frontier.push(BFSSearchProblemNode(child_state, node, action_to_child))
+                frontier.push(BFSNode(child_state, node, action_to_child))
     
     # If the frontier is empty then return failure
     return []
@@ -259,6 +259,7 @@ def uniformCostSearch(problem: SearchProblem):
             return str(self.state)
 
     # Initialize the frontier with the start state
+    # f(n) = g(n)
     frontier = util.PriorityQueueWithFunction(lambda node: node.cost)
     frontier.push(UCSNode(problem.getStartState(), None, None, 0))
 
@@ -292,8 +293,66 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
 
+    class AStarNode:
+        """
+        A node in the search tree. Contains a pointer to the parent
+        (the node that this is a successor of) and to the actual
+        state for this node. Note that if a state is arrived at by
+        two paths, then there are two nodes with the same state.  Also
+        includes the action that got us to this state.
+        """
+        def __init__(self, state, parent, action, cost):
+            self.state = state
+            self.parent = parent
+            self.action = action
+            self.cost = cost
+        
+        def get_path(self):
+            """
+            Returns a list of actions that got us to this node
+            """
+            path = []
+            node = self
+            while node.parent:
+                path.append(node.action)
+                node = node.parent
+            path.reverse()
+            return path
+        
+        def __eq__(self, other):
+            return self.state == other.state
+        
+        def __hash__(self):
+            return hash(self.state)
+        
+        def __str__(self):
+            return str(self.state)
+
+    # Initialize the frontier with the start state
+    # f(n) = g(n) + h(n)
+    frontier = util.PriorityQueueWithFunction(lambda node: node.cost + heuristic(node.state, problem))
+    frontier.push(AStarNode(problem.getStartState(), None, None, 0))
+
+    # Initialize the explored set to be empty
+    explored = set()
+
+    # Loop until the frontier is empty
+    while not frontier.isEmpty():
+        # Remove a node from the frontier
+        node = frontier.pop()
+        # If the node contains a goal state then return the corresponding solution
+        if problem.isGoalState(node.state):
+            return node.get_path()
+
+        if node.state not in explored:
+            # Add the node to the explored set
+            explored.add(node.state)
+            # Expand the node, adding the resulting nodes to the frontier
+            for child_state, action_to_child, cost_of_action  in problem.getSuccessors(node.state):
+                frontier.push(AStarNode(child_state, node, action_to_child, node.cost + cost_of_action))
+    # If the frontier is empty then return failure
+    return []
 
 # Abbreviations
 bfs = breadthFirstSearch

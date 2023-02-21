@@ -39,8 +39,8 @@ This code implements general search algorithms such as depth-first, breadth-firs
 In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman 1.
 We implemented the Depth First Search algorithm in <code>search.py</code> in the corresponding function.
 
-We create a <code>DFSSearchProblemNode</code> class to store the state | action | parent, of each state in the problem.
-In addition, we created the function <code>get_path</code> in <code>DFSSearchProblemNode</code>, allowing us to reconstruct the path from root to that node.
+We create a <code>DFSNode</code> class to store the state | action | parent, of each state in the problem.
+In addition, we created the function <code>get_path</code> in <code>DFSNode</code>, allowing us to reconstruct the path from root to that node.
 
 <h2>Answers to Questions:</h2>
 <ol>
@@ -121,8 +121,8 @@ Pacman emerges victorious! Score: 300
 In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman 1.
 We implemented the Breadth First Search algorithm in <code>search.py</code> in the corresponding function.
 
-We create a <code>BFSSearchProblemNode</code> class to store the state | action | parent, of each state in the problem.
-In addition, we created the function <code>get_path</code> in <code>BFSSearchProblemNode</code>, allowing us to reconstruct the path from root to that node.
+We create a <code>BFSNode</code> class to store the state | action | parent, of each state in the problem.
+In addition, we created the function <code>get_path</code> in <code>BFSNode</code>, allowing us to reconstruct the path from root to that node.
 
 <h2>Answers to Questions:</h2>
 <ol>
@@ -309,6 +309,32 @@ Pacman emerges victorious! Score: 418
 <br>
 
 <h1 id="q4">🚩 Question 4: A* search</h1>
+
+<p align="center"> 
+<img src="./gifs/aStar.gif" width="500"></img>
+</p>
+
+We implemented the A\* search algorithm in <code>search.py</code> in the corresponding function.
+
+We create a <code>AStarNode</code> class to store the state | action | parent and the cost of the path from the root to that node, of each state in the problem + the heuristic value of that state i.e. <code>g(n) + h(n)</code>.
+
+<h2>Test Cases</h2>
+
+<pre>$ python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic</pre>
+
+<li>
+Path found with total cost of 210 in 0.0 seconds
+</li>
+<li>
+Search nodes expanded: 549
+</li>
+<li>
+Pacman emerges victorious! Score: 300
+</li>
+
+<br>
+<br>
+
 <h1 id="q5">🚩 Question 5: Finding All the Corners</h1>
 <h1 id="q6">🚩 Question 6: Corners Problem: Heuristic</h1>
 <h1 id="q7">🚩 Question 7: Eating All The Dots</h1>
