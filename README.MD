@@ -171,78 +171,64 @@ Pacman emerges victorious! Score: 300
 
 <pre>$ python eightpuzzle.py</pre>
 
-BFS found a path of 7 moves: ['right', 'right', 'down', 'left', 'up', 'left', 'up']
-After 1 move: right
+## A random puzzle:
+
+## | 1 | 2 | 5 |
+
+## | 3 | 7 | 4 |
+
+## | 6 | X | 8 |
+
+BFS found a path of 5 moves: ['up', 'right', 'up', 'left', 'left']
+After 1 move: up
 
 ---
 
-## | 3 | 1 | 2 |
+## | 1 | 2 | 5 |
 
-## | 4 | x | 7 |
+## | 3 | X | 4 |
 
-## | 6 | 8 | 5 |
+## | 6 | 7 | 8 |
 
 Press return for the next state...
 After 2 moves: right
 
 ---
 
-## | 3 | 1 | 2 |
+## | 1 | 2 | 5 |
 
-## | 4 | 7 | x |
+## | 3 | 4 | X |
 
-## | 6 | 8 | 5 |
+## | 6 | 7 | 8 |
 
 Press return for the next state...
-After 3 moves: down
+After 3 moves: up
 
 ---
 
-## | 3 | 1 | 2 |
+## | 1 | 2 | X |
 
-## | 4 | 7 | 5 |
+## | 3 | 4 | 5 |
 
-## | 6 | 8 | x |
+## | 6 | 7 | 8 |
 
 Press return for the next state...
 After 4 moves: left
 
 ---
 
-## | 3 | 1 | 2 |
+## | 1 | X | 2 |
 
-## | 4 | 7 | 5 |
-
-## | 6 | x | 8 |
-
-Press return for the next state...
-After 5 moves: up
-
----
-
-## | 3 | 1 | 2 |
-
-## | 4 | x | 5 |
+## | 3 | 4 | 5 |
 
 ## | 6 | 7 | 8 |
 
 Press return for the next state...
-After 6 moves: left
+After 5 moves: left
 
 ---
 
-## | 3 | 1 | 2 |
-
-## | x | 4 | 5 |
-
-## | 6 | 7 | 8 |
-
-Press return for the next state...
-After 7 moves: up
-
----
-
-## | x | 1 | 2 |
+## | X | 1 | 2 |
 
 ## | 3 | 4 | 5 |
 
