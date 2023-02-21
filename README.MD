@@ -370,6 +370,50 @@ strategies?
 <br>
 
 <h1 id="q5">🚩 Question 5: Finding All the Corners</h1>
+
+<p align="center"> 
+<img src="./gifs/fourCorners.gif" width="500"></img>
+</p>
+
+In this problem, pacman should find a path to reach all the <strong>Corners</strong> in the maze, each step will cost pacman some value pre-defined by the <code>costFn</code> function.
+
+We implemented the <code>CornersProblem</code> class in <code>searchAgents.py</code> to represent the problem.
+Inside that class we created a <code>CornersState</code> class to represent the state of the problem, which is a tuple of the current position and boolean values representing if the corner is visited or not.
+
+We implemented the <code>getSuccessors</code> function to return the successors of the current state, the <code>isGoalState</code> function to check if the current state is the goal state and the <code>getStartState</code> function to return the start state of the problem.
+
+<h2>Test Cases</h2>
+
+<pre>$ python pacman.py -l tinyCorners -p SearchAgent -a fn=bfs,prob=CornersProblem</pre>
+
+<li>
+Path found with total cost of 28 in 0.0 seconds
+</li>
+<li>
+Search nodes expanded: 252
+</li>
+<li>
+Pacman emerges victorious! Score: 512
+</li>
+
+<hr>
+<pre>$ python pacman.py -l mediumCorners -p SearchAgent -a fn=bfs,prob=CornersProblem</pre>
+
+<li>
+Path found with total cost of 106 in 0.0 seconds
+</li>
+<li>
+Search nodes expanded: 1966
+</li>
+<li>
+Pacman emerges victorious! Score: 434
+</li>
+
+<hr>
+<br>
+<br>
+<br>
+
 <h1 id="q6">🚩 Question 6: Corners Problem: Heuristic</h1>
 <h1 id="q7">🚩 Question 7: Eating All The Dots</h1>
 <h1 id="q8">🚩 Question 8: Suboptimal Search</h1>
