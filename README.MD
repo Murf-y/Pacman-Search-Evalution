@@ -114,6 +114,144 @@ Pacman emerges victorious! Score: 300
 <br>
 
 <h1 id="q2">🚩 Question 2: Breadth First Search</h1>
+
+<p align="center"> 
+<img src="./gifs/bfs.gif" width="500"></img>
+</p>
+In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman 1.
+We implemented the Breadth First Search algorithm in <code>search.py</code> in the corresponding function.
+
+We create a <code>BFSSearchProblemNode</code> class to store the state | action | parent, of each state in the problem.
+In addition, we created the function <code>get_path</code> in <code>BFSSearchProblemNode</code>, allowing us to reconstruct the path from root to that node.
+
+<h2>Answers to Questions:</h2>
+<ol>
+    <li>
+        <strong>
+        Does BFS find a least cost solution?
+        </strong>
+        <br>
+        <pre>yes it does</pre>
+    </li>
+
+</ol>
+
+<h2>Test Cases</h2>
+
+<pre>$ python pacman.py -l mediumMaze -p SearchAgent -a fn=bfs</pre>
+
+<li>
+Path found with total cost of 68 in 0.0 seconds
+</li>
+<li>
+Search nodes expanded: 269
+</li>
+<li>
+Pacman emerges victorious! Score: 442
+</li>
+
+<hr>
+<pre>$ python pacman.py -l bigMaze -p SearchAgent -a fn=bfs -z .5</pre>
+
+<li>
+Path found with total cost of 210 in 0.0 seconds
+</li>
+<li>
+Search nodes expanded: 620
+</li>
+<li>
+Pacman emerges victorious! Score: 300
+</li>
+
+<br>
+<br>
+<br>
+
+<h2>Generic BFS works on <code>eightpuzzle.py</code></h2>
+
+<pre>$ python eightpuzzle.py</pre>
+
+BFS found a path of 7 moves: ['right', 'right', 'down', 'left', 'up', 'left', 'up']
+After 1 move: right
+
+---
+
+## | 3 | 1 | 2 |
+
+## | 4 | x | 7 |
+
+## | 6 | 8 | 5 |
+
+Press return for the next state...
+After 2 moves: right
+
+---
+
+## | 3 | 1 | 2 |
+
+## | 4 | 7 | x |
+
+## | 6 | 8 | 5 |
+
+Press return for the next state...
+After 3 moves: down
+
+---
+
+## | 3 | 1 | 2 |
+
+## | 4 | 7 | 5 |
+
+## | 6 | 8 | x |
+
+Press return for the next state...
+After 4 moves: left
+
+---
+
+## | 3 | 1 | 2 |
+
+## | 4 | 7 | 5 |
+
+## | 6 | x | 8 |
+
+Press return for the next state...
+After 5 moves: up
+
+---
+
+## | 3 | 1 | 2 |
+
+## | 4 | x | 5 |
+
+## | 6 | 7 | 8 |
+
+Press return for the next state...
+After 6 moves: left
+
+---
+
+## | 3 | 1 | 2 |
+
+## | x | 4 | 5 |
+
+## | 6 | 7 | 8 |
+
+Press return for the next state...
+After 7 moves: up
+
+---
+
+## | | 1 | 2 |
+
+## | 3 | 4 | 5 |
+
+## | 6 | 7 | 8 |
+
+<br>
+<br>
+<br>
+
 <h1 id="q3">🚩 Question 3: Varying the Cost Function</h1>
 <h1 id="q4">🚩 Question 4: A* search</h1>
 <h1 id="q5">🚩 Question 5: Finding All the Corners</h1>
