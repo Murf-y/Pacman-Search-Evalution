@@ -69,6 +69,7 @@ def tinyMazeSearch(problem):
     sequence of moves will be incorrect, so only use this for tinyMaze.
     """
     from game import Directions
+
     s = Directions.SOUTH
     w = Directions.WEST
     return [s, s, w, s, w, w, s, w]
@@ -147,9 +148,10 @@ def depthFirstSearch(problem: SearchProblem):
             # Add the node to the explored set
             explored.add(node.state)
             # Expand the node, adding the resulting nodes to the frontier
-            for child_state, action_to_child, cost_of_action in problem.getSuccessors(node.state):
-                frontier.push(DFSSearchProblemNode(
-                    child_state, node, action_to_child))
+            for child_state, action_to_child, cost_of_action in problem.getSuccessors(
+                node.state
+            ):
+                frontier.push(DFSSearchProblemNode(child_state, node, action_to_child))
 
     # If the frontier is empty then return failure
     return []
