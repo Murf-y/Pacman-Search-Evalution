@@ -147,6 +147,9 @@ def depthFirstSearch(problem: SearchProblem):
         for child_state, action, cost in problem.getSuccessors(node.state):
             if child_state not in explored:
                 frontier.push(DFSSearchProblemNode(child_state, node, action))
+        
+    # If the frontier is empty then return failure
+    return []
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
