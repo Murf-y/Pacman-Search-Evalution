@@ -10,13 +10,10 @@
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-
 import imp
 import optparse
 import os
 import pprint
-# imports from python standard library
 import py_compile
 import random
 import re
@@ -24,6 +21,7 @@ import sys
 
 import grading
 import projectParams
+# imports from python standard library
 
 random.seed(0)
 try:

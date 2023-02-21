@@ -10,17 +10,15 @@
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-
 import re
 import textwrap
 
-# import project specific code
 import layout
 import pacman
 import testClasses
 from game import Actions
 from search import SearchProblem
+# import project specific code
 
 # helper function for printing solutions in solution files
 
