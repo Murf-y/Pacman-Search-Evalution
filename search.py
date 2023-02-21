@@ -140,14 +140,14 @@ def depthFirstSearch(problem: SearchProblem):
         # If the node contains a goal state then return the corresponding solution
         if problem.isGoalState(node.state):
             return node.get_path()
-        # Add the node to the explored set
-        explored.add(node.state)
-        # Expand the chosen node, adding the resulting nodes to the frontier
-        # only if they aren't already in the explored set
-        for child_state, action, cost in problem.getSuccessors(node.state):
-            if child_state not in explored:
-                frontier.push(DFSSearchProblemNode(child_state, node, action))
-        
+
+        if node.state not in explored:
+            # Add the node to the explored set
+            explored.add(node.state)
+            # Expand the node, adding the resulting nodes to the frontier
+            for child_state, action_to_child, cost_of_action  in problem.getSuccessors(node.state):
+                frontier.push(DFSSearchProblemNode(child_state, node, action_to_child))
+    
     # If the frontier is empty then return failure
     return []
 
