@@ -146,9 +146,9 @@ def depthFirstSearch(problem: SearchProblem):
             explored.add(node.state)
             # Expand the node, adding the resulting nodes to the frontier
             for child_state, action_to_child, cost_of_action in problem.getSuccessors(
-                node.state
-            ):
-                frontier.push(DFSSearchProblemNode(child_state, node, action_to_child))
+                    node.state):
+                frontier.push(
+                    DFSSearchProblemNode(child_state, node, action_to_child))
 
     # If the frontier is empty then return failure
     return []

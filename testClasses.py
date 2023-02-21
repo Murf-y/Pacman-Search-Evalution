@@ -20,6 +20,7 @@ import sys
 # maximum number of points they are worth, and are composed of a series of
 # test cases
 class Question(object):
+
     def raiseNotDefined(self):
         print("Method not implemented: %s" % inspect.stack()[1][3])
         sys.exit(1)
@@ -48,6 +49,7 @@ class Question(object):
 
 
 class PassAllTestsQuestion(Question):
+
     def execute(self, grades):
         # TODO: is this the right way to use grades?  The autograder doesn't seem to use it.
         testsFailed = False
@@ -62,6 +64,7 @@ class PassAllTestsQuestion(Question):
 
 
 class ExtraCreditPassAllTestsQuestion(Question):
+
     def __init__(self, questionDict, display):
         Question.__init__(self, questionDict, display)
         self.extraPoints = int(questionDict["extra_points"])
@@ -85,6 +88,7 @@ class ExtraCreditPassAllTestsQuestion(Question):
 
 
 class HackedPartialCreditQuestion(Question):
+
     def execute(self, grades):
         # TODO: is this the right way to use grades?  The autograder doesn't seem to use it.
         grades.assignZeroCredit()
@@ -143,6 +147,7 @@ class NumberPassedQuestion(Question):
 
 # Template modeling a generic test case
 class TestCase(object):
+
     def raiseNotDefined(self):
         print("Method not implemented: %s" % inspect.stack()[1][3])
         sys.exit(1)
@@ -173,15 +178,15 @@ class TestCase(object):
     # to get a nice hierarchical project - question - test structure,
     # then these should be moved into Question proper.
     def testPass(self, grades):
-        grades.addMessage("PASS: %s" % (self.path,))
+        grades.addMessage("PASS: %s" % (self.path, ))
         for line in self.messages:
-            grades.addMessage("    %s" % (line,))
+            grades.addMessage("    %s" % (line, ))
         return True
 
     def testFail(self, grades):
-        grades.addMessage("FAIL: %s" % (self.path,))
+        grades.addMessage("FAIL: %s" % (self.path, ))
         for line in self.messages:
-            grades.addMessage("    %s" % (line,))
+            grades.addMessage("    %s" % (line, ))
         return False
 
     # This should really be question level?
@@ -191,20 +196,17 @@ class TestCase(object):
         extraCredit = max(0, points - maxPoints)
         regularCredit = points - extraCredit
 
-        grades.addMessage(
-            "%s: %s (%s of %s points)"
-            % (
-                "PASS" if points >= maxPoints else "FAIL",
-                self.path,
-                regularCredit,
-                maxPoints,
-            )
-        )
+        grades.addMessage("%s: %s (%s of %s points)" % (
+            "PASS" if points >= maxPoints else "FAIL",
+            self.path,
+            regularCredit,
+            maxPoints,
+        ))
         if extraCredit > 0:
-            grades.addMessage("EXTRA CREDIT: %s points" % (extraCredit,))
+            grades.addMessage("EXTRA CREDIT: %s points" % (extraCredit, ))
 
         for line in self.messages:
-            grades.addMessage("    %s" % (line,))
+            grades.addMessage("    %s" % (line, ))
 
         return True
 

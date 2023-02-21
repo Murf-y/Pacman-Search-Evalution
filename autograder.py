@@ -33,7 +33,8 @@ except:
 
 
 def readCommand(argv):
-    parser = optparse.OptionParser(description="Run public tests on student code")
+    parser = optparse.OptionParser(
+        description="Run public tests on student code")
     parser.set_defaults(
         generateSolutions=False,
         edxOutput=False,
@@ -46,7 +47,8 @@ def readCommand(argv):
         "--test-directory",
         dest="testRoot",
         default="test_cases",
-        help="Root test directory which contains subdirectories corresponding to each question",
+        help=
+        "Root test directory which contains subdirectories corresponding to each question",
     )
     parser.add_option(
         "--student-code",
@@ -173,9 +175,8 @@ def loadModuleString(moduleSource):
 
 def loadModuleFile(moduleName, filePath):
     with open(filePath, "r") as f:
-        return imp.load_module(
-            moduleName, f, "%s.py" % moduleName, (".py", "r", imp.PY_SOURCE)
-        )
+        return imp.load_module(moduleName, f, "%s.py" % moduleName,
+                               (".py", "r", imp.PY_SOURCE))
 
 
 def readFile(path, root=""):
@@ -191,7 +192,8 @@ def readFile(path, root=""):
 # TODO: use these
 ERROR_HINT_MAP = {
     "q1": {
-        "<type 'exceptions.IndexError'>": """
+        "<type 'exceptions.IndexError'>":
+        """
       We noticed that your project threw an IndexError on q1.
       While many things may cause this, it may have been from
       assuming a certain number of successors from a state space
@@ -201,7 +203,8 @@ ERROR_HINT_MAP = {
     """
     },
     "q3": {
-        "<type 'exceptions.AttributeError'>": """
+        "<type 'exceptions.AttributeError'>":
+        """
         We noticed that your project threw an AttributeError on q3.
         While many things may cause this, it may have been from assuming
         a certain size or structure to the state space. For example, if you have
@@ -264,8 +267,7 @@ def runTest(testName, moduleDict, printTestCase=False, display=None):
 def getDepends(testParser, testRoot, question):
     allDeps = [question]
     questionDict = testParser.TestParser(
-        os.path.join(testRoot, question, "CONFIG")
-    ).parse()
+        os.path.join(testRoot, question, "CONFIG")).parse()
     if "depends" in questionDict:
         depends = questionDict["depends"].split()
         for d in depends:
@@ -278,14 +280,14 @@ def getDepends(testParser, testRoot, question):
 
 
 def getTestSubdirs(testParser, testRoot, questionToGrade):
-    problemDict = testParser.TestParser(os.path.join(testRoot, "CONFIG")).parse()
+    problemDict = testParser.TestParser(os.path.join(testRoot,
+                                                     "CONFIG")).parse()
     if questionToGrade != None:
         questions = getDepends(testParser, testRoot, questionToGrade)
         if len(questions) > 1:
             print(
                 "Note: due to dependencies, the following tests will be run: %s"
-                % " ".join(questions)
-            )
+                % " ".join(questions))
         return questions
     if "order" in problemDict:
         return problemDict["order"].split()
@@ -323,16 +325,14 @@ def evaluate(
 
         # create a question object
         questionDict = testParser.TestParser(
-            os.path.join(subdir_path, "CONFIG")
-        ).parse()
+            os.path.join(subdir_path, "CONFIG")).parse()
         questionClass = getattr(testClasses, questionDict["class"])
         question = questionClass(questionDict, display)
         questionDicts[q] = questionDict
 
         # load test cases into question
-        tests = filter(
-            lambda t: re.match("[^#~.].*\.test\Z", t), os.listdir(subdir_path)
-        )
+        tests = filter(lambda t: re.match("[^#~.].*\.test\Z", t),
+                       os.listdir(subdir_path))
         tests = map(lambda t: re.match("(.*)\.test\Z", t).group(1), tests)
         for t in sorted(tests):
             test_file = os.path.join(subdir_path, "%s.test" % t)
@@ -349,20 +349,18 @@ def evaluate(
                 if generateSolutions:
                     # write solution file to disk
                     return lambda grades: testCase.writeSolution(
-                        moduleDict, solution_file
-                    )
+                        moduleDict, solution_file)
                 else:
                     # read in solution dictionary and pass as an argument
                     testDict = testParser.TestParser(test_file).parse()
                     solutionDict = testParser.TestParser(solution_file).parse()
                     if printTestCase:
                         return lambda grades: printTest(
-                            testDict, solutionDict
-                        ) or testCase.execute(grades, moduleDict, solutionDict)
+                            testDict, solutionDict) or testCase.execute(
+                                grades, moduleDict, solutionDict)
                     else:
                         return lambda grades: testCase.execute(
-                            grades, moduleDict, solutionDict
-                        )
+                            grades, moduleDict, solutionDict)
 
             question.addTestCase(testCase, makefun(testCase, solution_file))
 
@@ -421,12 +419,10 @@ if __name__ == "__main__":
     for cp in codePaths:
         moduleName = re.match(".*?([^/]*)\.py", cp).group(1)
         moduleDict[moduleName] = loadModuleFile(
-            moduleName, os.path.join(options.codeRoot, cp)
-        )
+            moduleName, os.path.join(options.codeRoot, cp))
     moduleName = re.match(".*?([^/]*)\.py", options.testCaseCode).group(1)
     moduleDict["projectTestClasses"] = loadModuleFile(
-        moduleName, os.path.join(options.codeRoot, options.testCaseCode)
-    )
+        moduleName, os.path.join(options.codeRoot, options.testCaseCode))
 
     if options.runTest != None:
         runTest(
