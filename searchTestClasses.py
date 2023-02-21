@@ -12,14 +12,14 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-from game import Actions
 import re
-import testClasses
 import textwrap
 
 # import project specific code
 import layout
 import pacman
+import testClasses
+from game import Actions
 from search import SearchProblem
 
 # helper function for printing solutions in solution files

@@ -12,17 +12,18 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-# imports from python standard library
-import py_compile
-import pprint
-import grading
 import imp
 import optparse
 import os
+import pprint
+# imports from python standard library
+import py_compile
+import random
 import re
 import sys
+
+import grading
 import projectParams
-import random
 
 random.seed(0)
 try:
@@ -237,8 +238,8 @@ def printTest(testDict, solutionDict):
 
 
 def runTest(testName, moduleDict, printTestCase=False, display=None):
-    import testParser
     import testClasses
+    import testParser
 
     for module in moduleDict:
         setattr(sys.modules[__name__], module, moduleDict[module])
@@ -308,8 +309,8 @@ def evaluate(
 ):
     # imports of testbench code.  note that the testClasses import must follow
     # the import of student code due to dependencies
-    import testParser
     import testClasses
+    import testParser
 
     for module in moduleDict:
         setattr(sys.modules[__name__], module, moduleDict[module])
