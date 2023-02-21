@@ -259,8 +259,8 @@ def uniformCostSearch(problem: SearchProblem):
             return str(self.state)
 
     # Initialize the frontier with the start state
-    frontier = util.PriorityQueue()
-    frontier.push(UCSNode(problem.getStartState(), None, None, 0), 0)
+    frontier = util.PriorityQueueWithFunction(lambda node: node.cost)
+    frontier.push(UCSNode(problem.getStartState(), None, None, 0))
 
     # Initialize the explored set to be empty
     explored = set()
@@ -278,8 +278,7 @@ def uniformCostSearch(problem: SearchProblem):
             explored.add(node.state)
             # Expand the node, adding the resulting nodes to the frontier
             for child_state, action_to_child, cost_of_action  in problem.getSuccessors(node.state):
-                frontier.push(UCSNode(child_state, node, action_to_child, node.cost + cost_of_action), node.cost + cost_of_action)
-            
+                frontier.push(UCSNode(child_state, node, action_to_child, node.cost + cost_of_action))
     # If the frontier is empty then return failure
     return []
 

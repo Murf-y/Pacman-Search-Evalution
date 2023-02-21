@@ -253,6 +253,61 @@ After 7 moves: up
 <br>
 
 <h1 id="q3">🚩 Question 3: Varying the Cost Function</h1>
+
+<p align="center"> 
+<img src="./gifs/ucs.gif" width="500"></img>
+</p>
+In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman some value pre-defined by the <code>costFn</code> function.
+
+We implemented the Uniform Cost Search algorithm in <code>search.py</code> in the corresponding function.
+
+We create a <code>UCSSearchProblemNode</code> class to store the state | action | parent and the cost of the path from the root to that node, of each state in the problem i.e. <code>g(n)</code>.
+
+In addition, we created the function <code>get_path</code> in <code>UCSSearchProblemNode</code>, allowing us to reconstruct the path from root to that node.
+
+<h2>Test Cases</h2>
+
+<pre>$ python pacman.py -l mediumMaze -p SearchAgent -a fn=ucs</pre>
+
+<li>
+Path found with total cost of 68 in 0.0 seconds
+</li>
+<li>
+Search nodes expanded: 269
+</li>
+<li>
+Pacman emerges victorious! Score: 442
+</li>
+
+<hr>
+<pre>$ python pacman.py -l mediumDottedMaze -p StayEastSearchAgent</pre>
+
+<li>
+Path found with total cost of 1 in 0.0 seconds
+</li>
+<li>
+Search nodes expanded: 186
+</li>
+<li>
+Pacman emerges victorious! Score: 646
+</li>
+
+<hr>
+<pre>$ python pacman.py -l mediumScaryMaze -p StayWestSearchAgent</pre>
+
+<li>
+Path found with total cost of 68719479864 in 0.0 seconds
+</li>
+<li>
+Search nodes expanded: 108
+</li>
+<li>
+Pacman emerges victorious! Score: 418
+</li>
+<br>
+<br>
+<br>
+
 <h1 id="q4">🚩 Question 4: A* search</h1>
 <h1 id="q5">🚩 Question 5: Finding All the Corners</h1>
 <h1 id="q6">🚩 Question 6: Corners Problem: Heuristic</h1>
