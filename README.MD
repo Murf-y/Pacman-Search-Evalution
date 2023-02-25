@@ -468,6 +468,10 @@ Pacman emerges victorious! Score: 434.0
 
 <hr>
 
+<br>
+<br>
+<br>
+
 <h1 id="q7">🚩 Question 7: Eating All The Dots</h1>
 In this problem, we implemented the <code>foodHeuristic</code> function in <code>searchAgents.py</code> to return the heuristic value of the current state.
 
@@ -530,6 +534,9 @@ Pacman emerges victorious! Score: 994
 </li>
 
 <hr>
+<br>
+<br>
+<br>
 
 <h1 id="q8">🚩 Question 8: Suboptimal Search</h1>
 In this section, we created an agent  that  always  greedily  eats  the  closest  dot. Using <code>ClosestDotSearchAgent</code> in searchAgents.py, we implemented a function that finds a path to the closest dot <code>findPathToClosestDot</code>
