@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+import ga_code as ga
 
 class SearchProblem:
     """
@@ -291,6 +292,13 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
+
+def gaHeuristic(state, problem: SearchProblem):
+    best_heuristic, best_fitness = ga.run_ga(given_problem=problem, algorithm=aStarSearch)
+    return best_heuristic
+    return 0
+
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
