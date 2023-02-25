@@ -393,6 +393,10 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    
+    """
+    MANEL YOUR CODE HERE
+    """
     class ProblemWrapper:
         def __init__(self, goal):
             self.goal = goal
