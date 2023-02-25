@@ -377,6 +377,9 @@ strategies?
 
 In this problem, pacman should find a path to reach all the <strong>Corners</strong> in the maze, each step will cost pacman some value pre-defined by the <code>costFn</code> function.
 
+We used <pre>self.startState = self.CornersState(self.startingPosition, [False, False, False, False])</pre>
+as a representation of the start state, where the boolean values represent if the corner is visited or not.
+
 We implemented the <code>CornersProblem</code> class in <code>searchAgents.py</code> to represent the problem.
 Inside that class we created a <code>CornersState</code> class to represent the state of the problem, which is a tuple of the current position and boolean values representing if the corner is visited or not.
 

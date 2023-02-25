@@ -274,6 +274,8 @@ def uniformCostSearch(problem: SearchProblem):
         if problem.isGoalState(node.state):
             return node.get_path()
 
+        # No need to check if node.cost < already_explored.cost
+        # Because we are using UCS, and costs are positive and thus it will always be  current_node_cost >= the cost of the already explored node
         if node.state not in explored:
             # Add the node to the explored set
             explored.add(node.state)
