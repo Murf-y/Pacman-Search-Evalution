@@ -396,6 +396,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     
     """
     MANEL YOUR CODE HERE
+    Below code i wrote as example of summation of manhattan distance from each corner to the goal
     """
     class ProblemWrapper:
         def __init__(self, goal):
@@ -502,7 +503,19 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    """
+    MANEL YOUR CODE HERE
+    Below code i wrote as example of summation of manhattan distance from each food to the goal
+    """
+    class ProblemWrapper:
+        def __init__(self, goal):
+            self.goal = goal
+    
+    dist = 0
+    for food in foodGrid.asList():
+        problem = ProblemWrapper(food)
+        dist += manhattanHeuristic(position, problem)
+    return dist
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
