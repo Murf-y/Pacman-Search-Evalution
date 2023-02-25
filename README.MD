@@ -418,6 +418,56 @@ Pacman emerges victorious! Score: 434
 <br>
 
 <h1 id="q6">🚩 Question 6: Corners Problem: Heuristic</h1>
+
+In this problem, we implemented the <code>cornersHeuristic</code> function in <code>searchAgents.py</code> to return the heuristic value of the current state.
+
+We created a <code>Admissible</code> and <code>Consistent</code> heuristic function.
+
+<h2>Genetic Algorithm</h2>
+We used a genetic algorithm to find the best heuristic function.
+
+<ol>
+<li> Encoding </li>
+We encoded the heuristic function as a list of 4 values, each value represents the weight of the heuristic function for each corner.
+
+<li> Fitness Function </li>
+We used the <code>scoreEvaluationFunction</code> function to evaluate the fitness of each heuristic function. Which is <code>1/number_of_nodes_expanded</code> and thus we wanted to minimize the number of nodes expanded by maximizing the fitness.
+
+<li> Selection </li>
+We used <code>roulette wheel selection</code> to select the best heuristic functions.
+
+<li> Crossover </li>
+We used <code>single point crossover</code> to create new heuristic functions. Crossover probability is 0.8.
+
+<li> Mutation </li>
+We used <code>random mutation</code> to mutate the heuristic functions. Mutation probability is 0.1.
+
+<li> Stopping Criteria </li>
+We used <code>number of generations</code> as a stopping criteria. We ran the genetic algorithm for 100 generations.
+
+<li> Results </li>
+We ran the genetic algorithm for 100 generations and the best heuristic function we found is <code>[0.5, 0.5, 0.5, 0.5]</code> with a fitness of <code>0.001</code> and number of nodes expanded of <code>252</code>.
+
+thus the best heuristic combination is <code>0.5 _ manhattanDistance + 0.5 _ manhattanDistance + 0.5 _ manhattanDistance + 0.5 _ manhattanDistance</code>
+
+</ol>
+
+<h2>Test Cases</h2>
+
+<pre>$ python pacman.py -l mediumCorners -p AStarCornersAgent -z 0.5</pre>
+
+<li>
+Path found with total cost of 28 in 0.0 seconds
+</li>
+<li>
+Search nodes expanded: 252
+</li>
+<li>
+Pacman emerges victorious! Score: 512
+</li>
+
+<hr>
+
 <h1 id="q7">🚩 Question 7: Eating All The Dots</h1>
 <h1 id="q8">🚩 Question 8: Suboptimal Search</h1>
 
