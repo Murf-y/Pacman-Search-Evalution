@@ -532,6 +532,24 @@ Pacman emerges victorious! Score: 994
 <hr>
 
 <h1 id="q8">🚩 Question 8: Suboptimal Search</h1>
+In this section, we created an agent  that  always  greedily  eats  the  closest  dot. Using <code>ClosestDotSearchAgent</code> in searchAgents.py, we implemented a function that finds a path to the closest dot <code>findPathToClosestDot</code>
+
+We used <code>BFS</code> to find the path to the closest dot using <code>AnyFoodSearchProblem</code> as gameState for <code>BFS</code>.
+
+We modified in <code>AnyFoodSearchProblem</code> the function <code>isGoalState</code> to return true if the current state is a food.
+
+<h2>Test Cases</h2>
+
+<pre>$ python pacman.py -l trickySearch -p AStarFoodSearchAgent</pre>
+
+<li>
+Path found with total cost of 350.
+</li>
+<li>
+Pacman emerges victorious! Score: 2360
+</li>
+
+<hr>
 
 <h1 id="contributors">Contributors 📖</h1>
 
