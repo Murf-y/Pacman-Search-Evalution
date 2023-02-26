@@ -25,23 +25,14 @@ import copy
 
 """# Heuristics"""
 
-# manhattan distance
 def manhattan_distance(current, problem):
     goal = problem.goal
     return abs(current[0] - goal[0]) + abs(current[1] - goal[1])
 
-# eucledian distance
 def euclidean_distance(current, problem):
     goal = problem.goal
     return math.sqrt((current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2)
 
-
-# Hamming distance
-def hamming_distance(current, problem):
-    goal = problem.goal
-    
-
-#maximum heuristics "minimax"
 def max_heuristic(current, problem):
     goal = problem.goal
     return max(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
@@ -50,14 +41,17 @@ def min_heuristic(current, problem):
     goal = problem.goal
     return min(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
 
-#diagonal distance
+def min_max_heuristic(current, problem):
+    goal = problem.goal
+    return min(max_heuristic(current, problem), min_heuristic(current, problem))
+
+
 def diagonal_distance(current, problem):
     goal = problem.goal
     dx = abs(current[0] - goal[0])
     dy = abs(current[1] - goal[1])
     return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)
 
-# h_squared
 def h_squared(current, problem):
     goal = problem.goal
     return (current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2
@@ -69,7 +63,7 @@ HEURISTICS_LIST = [
     euclidean_distance,
     diagonal_distance,
     max_heuristic,
-    min_heuristic,
+    min_heuristic
 ]
 
 class GeneticAlgorithm:
@@ -276,8 +270,7 @@ class GeneticAlgorithm:
 
     def optimize(self):
 
-        for i in tqdm(range(self.n_iterations)):
-            print("iteration number: ", i)
+        for i in range(self.n_iterations):
 
             # calculate fitness score
             scores = self.get_fitness_scores()
@@ -339,19 +332,19 @@ class GeneticAlgorithm:
 
 def run_ga(given_problem, algorithm):
     ga = GeneticAlgorithm(
-    n_genes = len(HEURISTICS_LIST),
-    n_iterations = 32,
-    lchrom = len(HEURISTICS_LIST), 
-    pcross = 0.8, 
-    pmutation = 0.05, 
-    crossover_type = 'one_point', 
-    mutation_type = 'bitstring', 
-    selection_type = 'ranking', 
-    popsize = 4, 
-    n_elites = 2,
-    problem = given_problem,
-    random_state = 11,
-    algorithm= algorithm
+        n_genes = len(HEURISTICS_LIST),
+        n_iterations = 32,
+        lchrom = len(HEURISTICS_LIST), 
+        pcross = 0.85, 
+        pmutation = 0.09, 
+        crossover_type = 'one_point', 
+        mutation_type = 'bitstring', 
+        selection_type = 'ranking', 
+        popsize = 10,
+        n_elites = 2,
+        problem = given_problem,
+        random_state = 11,
+        algorithm= algorithm
     )
     best_solution, best_fitness = ga.optimize()
     ga.view_fitness_evolution()
