@@ -44,6 +44,7 @@ import search
 import pacman
 from typing import List, Tuple, Any
 from ga_code import run_ga
+import itertools
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -312,6 +313,9 @@ class CornersProblem(search.SearchProblem):
         self.startingGameState = startingGameState
         self.startState = self.CornersState(self.startingPosition, [False, False, False, False])
 
+    def unvistedCorners(self, state: CornersState):
+        return [corner for corner, visited in zip(self.corners, state.corners) if not visited]
+
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
@@ -409,14 +413,26 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
     "*** YOUR CODE HERE ***"
     
-    h = 0
-    for i in range(len(corners)):
-        if not state.corners[i]:
-            search_prob = PositionSearchProblem(problem.startingGameState, start=state.position, goal=corners[i], warn=False, visualize=False)
-            h = max(get_ga_heuristic(state.position, corners[i], problem, i)(state.position, search_prob), h)
+    if all(state.corners):
+        return 0
 
-    return h
 
+    unvisited_corners = problem.unvistedCorners(state)
+
+    if len(unvisited_corners) == 0:
+        return 0
+    
+
+    # Calculate heuristic values for each corner
+    heuristic_values = [get_ga_heuristic(state.position, corner, problem, problem.corners.index(corner))(state.position, PositionSearchProblem(
+        problem.startingGameState, start=state.position, goal=corner, warn=False, visualize=False)
+    ) for corner in unvisited_corners]
+
+    min_distance = min(heuristic_values)
+
+    adjusted_heuristic = min_distance + len(unvisited_corners) * min_distance
+
+    return adjusted_heuristic
 
 
 

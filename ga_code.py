@@ -33,16 +33,16 @@ def euclidean_distance(current, problem):
     return math.sqrt((current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2)
 
 #maximum heuristics "minimax"
-def max_heuristic(current, problem):
-    goal = problem.goal
-    return max(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
+# def max_heuristic(current, problem):
+#     goal = problem.goal
+#     return max(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
 
-#diagonal distance
-def diagonal_distance(current, problem):
-    goal = problem.goal
-    dx = abs(current[0] - goal[0])
-    dy = abs(current[1] - goal[1])
-    return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)
+# #diagonal distance
+# def diagonal_distance(current, problem):
+#     goal = problem.goal
+#     dx = abs(current[0] - goal[0])
+#     dy = abs(current[1] - goal[1])
+#     return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)
 
 # look up pattern database heuristic
 """
@@ -53,10 +53,10 @@ def pattern_database_heuristic(state):
 
 """
 
-# h^2 heuristic
-def h_squared(current, problem):
-    goal = problem.goal
-    return (current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2
+# # h^2 heuristic
+# def h_squared(current, problem):
+#     goal = problem.goal
+#     return (current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2
 
 class GeneticAlgorithm:
 
@@ -216,12 +216,12 @@ class GeneticAlgorithm:
                         set_of_h.append(manhattan_distance)
                     if _ == 1:
                         set_of_h.append(euclidean_distance)
-                    if _ == 2:
-                        set_of_h.append(max_heuristic)
-                    if _ == 3:
-                        set_of_h.append(diagonal_distance)
-                    if _ == 4:
-                        set_of_h.append(h_squared)
+                    # if _ == 2:
+                    #     set_of_h.append(max_heuristic)
+                    # if _ == 3:
+                    #     set_of_h.append(diagonal_distance)
+                    # if _ == 4:
+                    #     set_of_h.append(h_squared)
         return set_of_h
     
     def get_new_function_from_set_of_h(self, set_of_h):
@@ -328,7 +328,7 @@ def run_ga(given_problem, algorithm):
     ga = GeneticAlgorithm(
     n_genes = 5,
     n_iterations = 32,
-    lchrom = 5, 
+    lchrom = 2, 
     pcross = 0.8, 
     pmutation = 0.05, 
     crossover_type = 'one_point', 
