@@ -14,7 +14,7 @@ import numpy as np
 from livelossplot.inputs.keras import PlotLossesCallback
 from sklearn.metrics import accuracy_score
 from scipy import stats
-from statistics import mean
+from statistics import mode, mean
 import math
 import inspect
 from tqdm import tqdm
@@ -41,29 +41,17 @@ def min_heuristic(current, problem):
     goal = problem.goal
     return min(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
 
-def min_max_heuristic(current, problem):
-    goal = problem.goal
-    return min(max_heuristic(current, problem), min_heuristic(current, problem))
-
-
 def diagonal_distance(current, problem):
     goal = problem.goal
     dx = abs(current[0] - goal[0])
     dy = abs(current[1] - goal[1])
     return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)
 
-def h_squared(current, problem):
-    goal = problem.goal
-    return (current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2
-
-
 
 HEURISTICS_LIST = [
     manhattan_distance,
     euclidean_distance,
-    diagonal_distance,
-    max_heuristic,
-    min_heuristic
+    diagonal_distance,   
 ]
 
 class GeneticAlgorithm:
@@ -101,7 +89,9 @@ class GeneticAlgorithm:
         pop = []
         while (len(pop) <= self.popsize):
             chromosome = np.random.randint(2, size= self.n_genes)
-            pop.append(chromosome)
+            # if chromosome = set of 0 then generate new one
+            if sum(chromosome) != 0:
+                pop.append(chromosome)
 
             
         # Convert pop to list of solutions
@@ -127,7 +117,22 @@ class GeneticAlgorithm:
             return epsilon
         else:
             return (1/cost)*(10**c)
+    def get_heuristic_set_from_ind(self, individual):
+        set_of_h = []
+        for _ in range(len(individual)):
+                if individual[_]:
+                    set_of_h.append(HEURISTICS_LIST[_])
+        return set_of_h
     
+    def get_new_function_from_set_of_h(self, set_of_h):
+        def new_heuristic(state, problem):
+            values = [h(state, problem) for h in set_of_h]
+            if len(set_of_h) == 0:
+              return 0
+            
+            return max(values)
+        return new_heuristic
+
     def get_fitness_scores(self):
         scores = [self.fitness_func(ind) for ind in self.population]
         return np.array(scores)
@@ -226,23 +231,7 @@ class GeneticAlgorithm:
             children = [child1, child2]
         return children
     
-    def get_heuristic_set_from_ind(self, individual):
-        set_of_h = []
-        for _ in range(len(individual)):
-                if individual[_]:
-                    set_of_h.append(HEURISTICS_LIST[_])
-        return set_of_h
-    
-    def get_new_function_from_set_of_h(self, set_of_h):
-        def new_heuristic(state, problem):
-            avg = 0
-            for h in set_of_h:
-              avg += h(state, problem)
-            
-            if len(set_of_h) == 0:
-              return 0
-            return avg/len(set_of_h)
-        return new_heuristic
+
 
     def __mutation(self, individual, mutation_type, pmutation):
 
@@ -300,9 +289,13 @@ class GeneticAlgorithm:
                 else:
                     children = [mate1, mate2]
                 
-                new_population.append(tuple(children[0]))
-                new_population.append(tuple(children[1]))        
-                j+=2
+                if sum(tuple(children[0])) != 0:
+                    new_population.append(tuple(children[0]))
+                    j+=1
+                
+                if sum(tuple(children[1])) != 0:
+                    new_population.append(tuple(children[1]))        
+                    j+=1
 
             self.population = new_population
 
@@ -349,8 +342,7 @@ def run_ga(given_problem, algorithm):
     best_solution, best_fitness = ga.optimize()
     ga.view_fitness_evolution()
 
-    print("best solution: ", best_solution)
-
+    print('Best solution: ', best_solution)
     best_heuristic = ga.get_new_function_from_set_of_h(ga.get_heuristic_set_from_ind(best_solution))
 
     return best_heuristic

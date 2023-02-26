@@ -45,6 +45,7 @@ import pacman
 from typing import List, Tuple, Any
 from ga_code import run_ga
 import itertools
+import math
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -310,8 +311,11 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
 
+        "*** YOUR CODE HERE ***"
+
         self.startingGameState = startingGameState
         self.startState = self.CornersState(self.startingPosition, [False, False, False, False])
+        self.heuristicInfo = {} # A dictionary for the heuristic to store information
 
     def unvistedCorners(self, state: CornersState):
         return [corner for corner, visited in zip(self.corners, state.corners) if not visited]
@@ -380,20 +384,58 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
+def lk_heuristic(position, food_list):
+    candidates = list(food_list)
+    tour = [position]
+    tour_length = 0
+    while candidates:
+        distances = [(math.dist(tour[-1], candidate), candidate) for candidate in candidates]
+        _, closest = min(distances)
+        tour.append(closest)
+        candidates.remove(closest)
+        tour_length += distances[distances.index((_, closest))][0]
+    return tour_length
 
-cacheCornerHeuristic = {}
+def nearest_neighbor(position, food_list):
+    unvisited = set(food_list)
+    current = position
+    cost = 0
+    while unvisited:
+        nearest = min(unvisited, key=lambda x: util.manhattanDistance(current, x))
+        current = nearest
+        unvisited.remove(nearest)
+        cost += math.dist(current, nearest)
+    return cost
 
-def get_ga_heuristic(start, goal, problem: CornersProblem, corner_index):
-    global cacheCornerHeuristic
+def greedy_tour(position, food_list):
+    # Create a set to store the unvisited food positions
+    unvisited = set(food_list)
+    # Initialize the current position to the starting position
+    current = position
+    # Initialize the tour with the starting position
+    tour = [current]
+    # Repeat until all food positions have been visited
+    while unvisited:
+        # Find the nearest unvisited food position to the current position
+        nearest = None
+        min_dist = float('inf')
+        for food in unvisited:
+            dist = math.dist(current, food)
+            if dist < min_dist:
+                nearest = food
+                min_dist = dist
+        # Add the nearest food position to the tour
+        tour.append(nearest)
+        # Remove the nearest food position from the unvisited set
+        unvisited.remove(nearest)
+        # Update the current position
+        current = nearest
+    # Return the tour
+    return tour
 
-    if corner_index in cacheCornerHeuristic:
-        return cacheCornerHeuristic[corner_index]
-    
-    position_search_problem = PositionSearchProblem(problem.startingGameState, start=start, goal=goal, warn=False, visualize=False)
-
-    ga_heuristic = run_ga(position_search_problem, search.aStarSearch)
-    cacheCornerHeuristic[corner_index] = ga_heuristic
-    return ga_heuristic    
+def greed_tour_heuristic(position, food_list):
+    tour = greedy_tour(position, food_list)
+    return sum(math.dist(tour[i], tour[i+1]) for i in range(len(tour)-1))
 
 def cornersHeuristic(state: Any, problem: CornersProblem):
     """
@@ -416,28 +458,14 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     unvisited_corners = problem.unvistedCorners(state)
     
 
-    
-
     if len(unvisited_corners) == 0:
         return 0
     
-    if len(unvisited_corners) == 1:
-        return get_ga_heuristic(state.position, unvisited_corners[0], problem, problem.corners.index(unvisited_corners[0]))(state.position, PositionSearchProblem(
-        problem.startingGameState, start=state.position, goal=unvisited_corners[0], warn=False, visualize=False)
-    )
     
-    if len(unvisited_corners) == 2:
-        return get_ga_heuristic(state.position, unvisited_corners[0], problem, problem.corners.index(unvisited_corners[0]))(state.position, PositionSearchProblem(
-        problem.startingGameState, start=state.position, goal=unvisited_corners[0], warn=False, visualize=False)
-    ) + get_ga_heuristic(unvisited_corners[0], unvisited_corners[1], problem, problem.corners.index(unvisited_corners[1]))(unvisited_corners[0], PositionSearchProblem(
-        problem.startingGameState, start=unvisited_corners[0], goal=unvisited_corners[1], warn=False, visualize=False)
-    )
+    position = state.position
+    food_list = unvisited_corners
+    return max(greed_tour_heuristic(position, food_list), lk_heuristic(position, food_list), nearest_neighbor(position, food_list))
 
-
-    perms = itertools.permutations(unvisited_corners)
-    return min(sum(get_ga_heuristic(state.position, perm[i], problem, problem.corners.index(perm[i]))(state.position, PositionSearchProblem(
-        problem.startingGameState, start=state.position, goal=perm[i], warn=False, visualize=False)
-    ) for i in range(len(unvisited_corners))) for perm in perms)
 
 
 
@@ -533,19 +561,14 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    """
-    MANEL YOUR CODE HERE
-    Below code i wrote as example of summation of manhattan distance from each food to the goal
-    """
-    class ProblemWrapper:
-        def __init__(self, goal):
-            self.goal = goal
     
-    dist = 0
-    for food in foodGrid.asList():
-        problem = ProblemWrapper(food)
-        dist += manhattanHeuristic(position, problem)
-    return dist
+    if foodGrid.count() == 0:
+        return 0
+
+    food_list = foodGrid.asList()
+    return max(greed_tour_heuristic(position, food_list), lk_heuristic(position, food_list), nearest_neighbor(position, food_list))
+
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
