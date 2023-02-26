@@ -409,13 +409,13 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
     "*** YOUR CODE HERE ***"
     
-    dist = 0
+    h = 0
     for i in range(len(corners)):
         if not state.corners[i]:
             search_prob = PositionSearchProblem(problem.startingGameState, start=state.position, goal=corners[i], warn=False, visualize=False)
-            dist += get_ga_heuristic(state.position, corners[i], problem, i)(state.position, search_prob)
+            h = max(get_ga_heuristic(state.position, corners[i], problem, i)(state.position, search_prob), h)
 
-    return dist
+    return h
 
 
 
