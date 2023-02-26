@@ -100,32 +100,15 @@ class GeneticAlgorithm:
         self.population = [tuple(x) for x in pop]
 
     def fitness_func(self, solution):
-            set_of_h = []
-            for _ in range(len(solution)):
-                if solution[_]:
-                    if _ == 0:
-                        set_of_h.append(manhattan_distance)
-                    if _ == 1:
-                        set_of_h.append(euclidean_distance)
-                    if _ == 2:
-                        set_of_h.append(max_heuristic)
-                    if _ == 3:
-                        set_of_h.append(diagonal_distance)
-                    if _ == 4:
-                        set_of_h.append(h_squared)
-                    #if _ == 5:
-                     #   scores.append(len(aStarSearch(problem: SearchProblem, heuristic=pattern_database_heuristic)))
-
-            def new_heuristic(state, problem):
-                avg = 0
-                for h in set_of_h:
-                  avg += h(state, problem)
-                
-                if len(set_of_h) == 0:
-                  return 0
-                return avg/len(set_of_h)
+            set_of_h = self.get_heuristic_set_from_ind(individual=solution)
             
-            return 1/len(self.algorithm(self.problem, heuristic=new_heuristic))
+            new_heuristic = self.get_new_function_from_set_of_h(set_of_h)
+            
+            cost = len(self.algorithm(self.problem, heuristic=new_heuristic))
+            if cost == 0:
+                return 1
+            else:
+                return 1/cost
     
     def get_fitness_scores(self):
         scores = [self.fitness_func(ind) for ind in self.population]
@@ -199,6 +182,7 @@ class GeneticAlgorithm:
 
             if self.flip(pmutation):
                 child1 = self.__mutation(child1, mutation_type, pmutation)
+
             if self.flip(pmutation):
                 child2 = self.__mutation(child2, mutation_type, pmutation)
 
@@ -224,6 +208,33 @@ class GeneticAlgorithm:
             children = [child1, child2]
         return children
     
+    def get_heuristic_set_from_ind(self, individual):
+        set_of_h = []
+        for _ in range(len(individual)):
+                if individual[_]:
+                    if _ == 0:
+                        set_of_h.append(manhattan_distance)
+                    if _ == 1:
+                        set_of_h.append(euclidean_distance)
+                    if _ == 2:
+                        set_of_h.append(max_heuristic)
+                    if _ == 3:
+                        set_of_h.append(diagonal_distance)
+                    if _ == 4:
+                        set_of_h.append(h_squared)
+        return set_of_h
+    
+    def get_new_function_from_set_of_h(self, set_of_h):
+        def new_heuristic(state, problem):
+            avg = 0
+            for h in set_of_h:
+              avg += h(state, problem)
+            
+            if len(set_of_h) == 0:
+              return 0
+            return avg/len(set_of_h)
+        return new_heuristic
+
     def __mutation(self, individual, mutation_type, pmutation):
 
         if mutation_type not in ['bitstring', 'inversion', 'swap']:
@@ -235,7 +246,7 @@ class GeneticAlgorithm:
         
         # Convert individual to list so that can be modified
         individual_mod = list(individual)
-        if mutation_type == 'bitstring':      
+        if mutation_type == 'bitstring':
             individual_mod[index] = 1 - individual_mod[index]
         elif mutation_type == 'inversion':
             individual_mod= individual_mod[0:index] + individual_mod[index2:index-1:-1] + individual_mod[index2+1:]
@@ -245,6 +256,8 @@ class GeneticAlgorithm:
             pass
         
         individual = tuple(individual_mod)
+
+        return individual
 
     def optimize(self):
 
@@ -275,7 +288,6 @@ class GeneticAlgorithm:
 
                 if self.flip(self.pcross):
                     children = self.__crossover(mate1, mate2, self.crossover_type, self.pcross, self.pmutation, self.mutation_type, self.lchrom)
-                    # convert children to tuple
                     children = [tuple(child) for child in children]
                     x= False
                 else:
@@ -286,9 +298,6 @@ class GeneticAlgorithm:
                 new_population.append(tuple(children[1]))        
                 j+=2
 
-            # ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (8,) + inhomogeneous part.
-            print("new_population: ", new_population)
-            print("old population: ", self.population)
             self.population = new_population
 
         # when n_iterations are over, fitness scores
@@ -334,5 +343,7 @@ def run_ga(given_problem, algorithm):
     best_solution, best_fitness = ga.optimize()
     ga.view_fitness_evolution()
 
-    return best_solution, best_fitness
+    best_heuristic = ga.get_new_function_from_set_of_h(ga.get_heuristic_set_from_ind(best_solution))
+
+    return best_heuristic
     

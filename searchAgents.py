@@ -43,6 +43,7 @@ import time
 import search
 import pacman
 from typing import List, Tuple, Any
+from ga_code import run_ga
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -376,6 +377,20 @@ class CornersProblem(search.SearchProblem):
         return len(actions)
 
 
+cacheCornerHeuristic = {}
+
+def get_ga_heuristic(start, goal, problem: CornersProblem, corner_index):
+    global cacheCornerHeuristic
+
+    if corner_index in cacheCornerHeuristic:
+        return cacheCornerHeuristic[corner_index]
+    
+    position_search_problem = PositionSearchProblem(problem.startingGameState, start=start, goal=goal, warn=False, visualize=False)
+
+    ga_heuristic = run_ga(position_search_problem, search.aStarSearch)
+    cacheCornerHeuristic[corner_index] = ga_heuristic
+    return ga_heuristic    
+
 def cornersHeuristic(state: Any, problem: CornersProblem):
     """
     A heuristic for the CornersProblem that you defined.
@@ -394,21 +409,15 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
     "*** YOUR CODE HERE ***"
     
-    """
-    MANEL YOUR CODE HERE
-    Below code i wrote as example of summation of manhattan distance from each corner to the goal
-    """
-    class ProblemWrapper:
-        def __init__(self, goal):
-            self.goal = goal
-
     dist = 0
-    for corner in corners:
-        if state.corners[corners.index(corner)]:
-            continue
-        problem = ProblemWrapper(corner)
-        dist += manhattanHeuristic(state.position, problem)
+    for i in range(len(corners)):
+        if not state.corners[i]:
+            search_prob = PositionSearchProblem(problem.startingGameState, start=state.position, goal=corners[i], warn=False, visualize=False)
+            dist += get_ga_heuristic(state.position, corners[i], problem, i)(state.position, search_prob)
+
     return dist
+
+
 
 
 class AStarCornersAgent(SearchAgent):
