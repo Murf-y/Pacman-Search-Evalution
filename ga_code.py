@@ -326,7 +326,7 @@ class GeneticAlgorithm:
 
 def run_ga(given_problem, algorithm):
     ga = GeneticAlgorithm(
-    n_genes = 5,
+    n_genes = 2,
     n_iterations = 32,
     lchrom = 2, 
     pcross = 0.8, 
@@ -342,6 +342,8 @@ def run_ga(given_problem, algorithm):
     )
     best_solution, best_fitness = ga.optimize()
     ga.view_fitness_evolution()
+
+    print("best solution: ", best_solution)
 
     best_heuristic = ga.get_new_function_from_set_of_h(ga.get_heuristic_set_from_ind(best_solution))
 
