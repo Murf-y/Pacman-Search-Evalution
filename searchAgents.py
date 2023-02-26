@@ -413,26 +413,31 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
     "*** YOUR CODE HERE ***"
     
-    if all(state.corners):
-        return 0
-
-
     unvisited_corners = problem.unvistedCorners(state)
+    
+
+    
 
     if len(unvisited_corners) == 0:
         return 0
     
+    if len(unvisited_corners) == 1:
+        return get_ga_heuristic(state.position, unvisited_corners[0], problem, problem.corners.index(unvisited_corners[0]))(state.position, PositionSearchProblem(
+        problem.startingGameState, start=state.position, goal=unvisited_corners[0], warn=False, visualize=False)
+    )
+    
+    if len(unvisited_corners) == 2:
+        return get_ga_heuristic(state.position, unvisited_corners[0], problem, problem.corners.index(unvisited_corners[0]))(state.position, PositionSearchProblem(
+        problem.startingGameState, start=state.position, goal=unvisited_corners[0], warn=False, visualize=False)
+    ) + get_ga_heuristic(unvisited_corners[0], unvisited_corners[1], problem, problem.corners.index(unvisited_corners[1]))(unvisited_corners[0], PositionSearchProblem(
+        problem.startingGameState, start=unvisited_corners[0], goal=unvisited_corners[1], warn=False, visualize=False)
+    )
 
-    # Calculate heuristic values for each corner
-    heuristic_values = [get_ga_heuristic(state.position, corner, problem, problem.corners.index(corner))(state.position, PositionSearchProblem(
-        problem.startingGameState, start=state.position, goal=corner, warn=False, visualize=False)
-    ) for corner in unvisited_corners]
 
-    min_distance = min(heuristic_values)
-
-    adjusted_heuristic = min_distance + len(unvisited_corners) * min_distance
-
-    return adjusted_heuristic
+    perms = itertools.permutations(unvisited_corners)
+    return min(sum(get_ga_heuristic(state.position, perm[i], problem, problem.corners.index(perm[i]))(state.position, PositionSearchProblem(
+        problem.startingGameState, start=state.position, goal=perm[i], warn=False, visualize=False)
+    ) for i in range(len(unvisited_corners))) for perm in perms)
 
 
 

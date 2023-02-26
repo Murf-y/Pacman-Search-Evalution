@@ -19,6 +19,9 @@ import math
 import inspect
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+import copy
+
+
 
 """# Heuristics"""
 
@@ -32,31 +35,42 @@ def euclidean_distance(current, problem):
     goal = problem.goal
     return math.sqrt((current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2)
 
+
+# Hamming distance
+def hamming_distance(current, problem):
+    goal = problem.goal
+    
+
 #maximum heuristics "minimax"
-# def max_heuristic(current, problem):
-#     goal = problem.goal
-#     return max(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
+def max_heuristic(current, problem):
+    goal = problem.goal
+    return max(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
 
-# #diagonal distance
-# def diagonal_distance(current, problem):
-#     goal = problem.goal
-#     dx = abs(current[0] - goal[0])
-#     dy = abs(current[1] - goal[1])
-#     return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)
+def min_heuristic(current, problem):
+    goal = problem.goal
+    return min(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
 
-# look up pattern database heuristic
-"""
-# Assume we have a precomputed pattern database called pattern_db
+#diagonal distance
+def diagonal_distance(current, problem):
+    goal = problem.goal
+    dx = abs(current[0] - goal[0])
+    dy = abs(current[1] - goal[1])
+    return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)
 
-def pattern_database_heuristic(state):
-    return pattern_db[state]
+# h_squared
+def h_squared(current, problem):
+    goal = problem.goal
+    return (current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2
 
-"""
 
-# # h^2 heuristic
-# def h_squared(current, problem):
-#     goal = problem.goal
-#     return (current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2
+
+HEURISTICS_LIST = [
+    manhattan_distance,
+    euclidean_distance,
+    diagonal_distance,
+    max_heuristic,
+    min_heuristic,
+]
 
 class GeneticAlgorithm:
 
@@ -100,15 +114,25 @@ class GeneticAlgorithm:
         self.population = [tuple(x) for x in pop]
 
     def fitness_func(self, solution):
-            set_of_h = self.get_heuristic_set_from_ind(individual=solution)
-            
-            new_heuristic = self.get_new_function_from_set_of_h(set_of_h)
-            
-            cost = len(self.algorithm(self.problem, heuristic=new_heuristic))
-            if cost == 0:
-                return 1
-            else:
-                return 1/cost
+        # should maximize
+
+        c = 3
+        epsilon = 10**(-c)
+        problem_copy = copy.deepcopy(self.problem)
+
+        # if all 0 in solution, return 1
+        if sum(solution) == 0:
+            return epsilon
+        set_of_h = self.get_heuristic_set_from_ind(individual=solution)
+        
+        new_heuristic = self.get_new_function_from_set_of_h(set_of_h)
+        
+        self.algorithm(problem_copy, heuristic=new_heuristic)
+        cost = problem_copy._expanded
+        if cost == 0:
+            return epsilon
+        else:
+            return (1/cost)*(10**c)
     
     def get_fitness_scores(self):
         scores = [self.fitness_func(ind) for ind in self.population]
@@ -212,16 +236,7 @@ class GeneticAlgorithm:
         set_of_h = []
         for _ in range(len(individual)):
                 if individual[_]:
-                    if _ == 0:
-                        set_of_h.append(manhattan_distance)
-                    if _ == 1:
-                        set_of_h.append(euclidean_distance)
-                    # if _ == 2:
-                    #     set_of_h.append(max_heuristic)
-                    # if _ == 3:
-                    #     set_of_h.append(diagonal_distance)
-                    # if _ == 4:
-                    #     set_of_h.append(h_squared)
+                    set_of_h.append(HEURISTICS_LIST[_])
         return set_of_h
     
     def get_new_function_from_set_of_h(self, set_of_h):
@@ -289,10 +304,8 @@ class GeneticAlgorithm:
                 if self.flip(self.pcross):
                     children = self.__crossover(mate1, mate2, self.crossover_type, self.pcross, self.pmutation, self.mutation_type, self.lchrom)
                     children = [tuple(child) for child in children]
-                    x= False
                 else:
                     children = [mate1, mate2]
-                    x=True
                 
                 new_population.append(tuple(children[0]))
                 new_population.append(tuple(children[1]))        
@@ -326,18 +339,18 @@ class GeneticAlgorithm:
 
 def run_ga(given_problem, algorithm):
     ga = GeneticAlgorithm(
-    n_genes = 2,
+    n_genes = len(HEURISTICS_LIST),
     n_iterations = 32,
-    lchrom = 2, 
+    lchrom = len(HEURISTICS_LIST), 
     pcross = 0.8, 
     pmutation = 0.05, 
     crossover_type = 'one_point', 
     mutation_type = 'bitstring', 
     selection_type = 'ranking', 
-    popsize = 6, 
+    popsize = 4, 
     n_elites = 2,
     problem = given_problem,
-    random_state = 123,
+    random_state = 11,
     algorithm= algorithm
     )
     best_solution, best_fitness = ga.optimize()
