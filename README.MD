@@ -5,7 +5,7 @@
 <h3 align="center"> CSC460 - Artificial Intelligence ©️</h3>
 <h5 align="center"> Project Phase 1 </h5>
 
-<p align="center"> 
+<p align="center">
   <img src="./gifs/big.gif" alt="Animated gif pacman game" height="282px" width="500" style="border-radius:2rem">
 </p>
 
@@ -33,7 +33,7 @@ This code implements general search algorithms such as depth-first, breadth-firs
 
 <h1 id="q1">🚩 Question 1: Finding Fixed Food Dot using Depth First Search</h1>
 
-<p align="center"> 
+<p align="center">
 <img src="./gifs/dfs.gif" width="500"></img>
 </p>
 In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman 1.
@@ -115,7 +115,7 @@ Pacman emerges victorious! Score: 300
 
 <h1 id="q2">🚩 Question 2: Breadth First Search</h1>
 
-<p align="center"> 
+<p align="center">
 <img src="./gifs/bfs.gif" width="500"></img>
 </p>
 In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman 1.
@@ -171,7 +171,7 @@ Pacman emerges victorious! Score: 300
 
 <pre>$ python eightpuzzle.py</pre>
 
-## A random puzzle:
+## A random puzzle
 
 ## | 1 | 2 | 5 |
 
@@ -240,7 +240,7 @@ After 5 moves: left
 
 <h1 id="q3">🚩 Question 3: Varying the Cost Function</h1>
 
-<p align="center"> 
+<p align="center">
 <img src="./gifs/ucs.gif" width="500"></img>
 </p>
 In this problem, pacman should find a path to reach a <strong>Food Dot</strong>, each step will cost pacman some value pre-defined by the <code>costFn</code> function.
@@ -296,7 +296,7 @@ Pacman emerges victorious! Score: 418
 
 <h1 id="q4">🚩 Question 4: A* search</h1>
 
-<p align="center"> 
+<p align="center">
 <img src="./gifs/aStar.gif" width="500"></img>
 </p>
 
@@ -335,7 +335,7 @@ strategies?
                     <li>Path found with total cost of 298 in 0.0 seconds </li>
                     <li>Search nodes expanded: 576</li>
                     <li>Pacman emerges victorious! Score: 212</li>
-                </ul> 
+                </ul>
             </li>
             <li> BFS: <br>
                 BFS is optimal, it will find the shortest path to the goal. <br>
@@ -343,7 +343,7 @@ strategies?
                     <li>Path found with total cost of 54 in 0.0 seconds </li>
                     <li>Search nodes expanded: 682</li>
                     <li>Pacman emerges victorious! Score: 456</li>
-                </ul> 
+                </ul>
             </li>
             <li> UCS: <br>
                 UCS is optimal, it will find the shortest path to the goal. <br>
@@ -351,15 +351,15 @@ strategies?
                     <li>Path found with total cost of 54 in 0.0 seconds </li>
                     <li>Search nodes expanded: 682</li>
                     <li>Pacman emerges victorious! Score: 456</li>
-                </ul> 
+                </ul>
             </li>
-            <li> A* <br>
+            <li> A*<br>
                 A* is optimal, it will find the shortest path to the goal. <br>
                 <ul>
                     <li>Path found with total cost of 54 in 0.0 seconds </li>
                     <li>Search nodes expanded: 550</li>
                     <li>Pacman emerges victorious! Score: 456</li>
-                </ul> 
+                </ul>
             </li>
         </ul>
     </li>
@@ -371,7 +371,7 @@ strategies?
 
 <h1 id="q5">🚩 Question 5: Finding All the Corners</h1>
 
-<p align="center"> 
+<p align="center">
 <img src="./gifs/fourCorners.gif" width="500"></img>
 </p>
 
@@ -448,7 +448,7 @@ We used <code>number of generations</code> as a stopping criteria. We ran the ge
 <li> Results </li>
 We ran the genetic algorithm for 100 generations and the best heuristic function we found is <code>[0.5, 0.5, 0.5, 0.5]</code> with a fitness of <code>0.001</code> and number of nodes expanded of <code>252</code>.
 
-thus the best heuristic combination is <code>0.5 _ manhattanDistance + 0.5 _ manhattanDistance + 0.5 _ manhattanDistance + 0.5 _ manhattanDistance</code>
+thus the best heuristic combination is <code>0.5 _manhattanDistance + 0.5_ manhattanDistance + 0.5 _manhattanDistance + 0.5_ manhattanDistance</code>
 
 </ol>
 
@@ -502,7 +502,7 @@ We used <code>number of generations</code> as a stopping criteria. We ran the ge
 <li> Results </li>
 We ran the genetic algorithm for 100 generations and the best heuristic function we found is <code>[0.5, 0.5, 0.5, 0.5]</code> with a fitness of <code>0.001</code> and number of nodes expanded of <code>252</code>.
 
-thus the best heuristic combination is <code>0.5 _ manhattanDistance + 0.5 _ manhattanDistance + 0.5 _ manhattanDistance + 0.5 _ manhattanDistance</code>
+thus the best heuristic combination is <code>0.5 _manhattanDistance + 0.5_ manhattanDistance + 0.5 _manhattanDistance + 0.5_ manhattanDistance</code>
 
 </ol>
 
@@ -562,5 +562,9 @@ Pacman emerges victorious! Score: 2360
 
 <ul>
 <li>Charbel Fayad - charbel.fayad01@lau.edu - 202102394</li>
-<li>Manel Benabid - manel.benabid@lau.edu - </li>
+<li>Manel Roumaissa Benabid - manelroumaissa.benabid@lau.edu - 201906232</li>
 </ul>
+
+<h1 id="license">License 📄</h1>
+
+This project is licensed under the MIT License - see the <a href="MIT License">LICENSE.md</a> file for details
