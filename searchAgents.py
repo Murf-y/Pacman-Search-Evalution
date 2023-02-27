@@ -384,59 +384,6 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
-def lk_heuristic(position, food_list):
-    candidates = list(food_list)
-    tour = [position]
-    tour_length = 0
-    while candidates:
-        distances = [(math.dist(tour[-1], candidate), candidate) for candidate in candidates]
-        _, closest = min(distances)
-        tour.append(closest)
-        candidates.remove(closest)
-        tour_length += distances[distances.index((_, closest))][0]
-    return tour_length
-
-def nearest_neighbor(position, food_list):
-    unvisited = set(food_list)
-    current = position
-    cost = 0
-    while unvisited:
-        nearest = min(unvisited, key=lambda x: util.manhattanDistance(current, x))
-        current = nearest
-        unvisited.remove(nearest)
-        cost += math.dist(current, nearest)
-    return cost
-
-def greedy_tour(position, food_list):
-    # Create a set to store the unvisited food positions
-    unvisited = set(food_list)
-    # Initialize the current position to the starting position
-    current = position
-    # Initialize the tour with the starting position
-    tour = [current]
-    # Repeat until all food positions have been visited
-    while unvisited:
-        # Find the nearest unvisited food position to the current position
-        nearest = None
-        min_dist = float('inf')
-        for food in unvisited:
-            dist = math.dist(current, food)
-            if dist < min_dist:
-                nearest = food
-                min_dist = dist
-        # Add the nearest food position to the tour
-        tour.append(nearest)
-        # Remove the nearest food position from the unvisited set
-        unvisited.remove(nearest)
-        # Update the current position
-        current = nearest
-    # Return the tour
-    return tour
-
-def greed_tour_heuristic(position, food_list):
-    tour = greedy_tour(position, food_list)
-    return sum(math.dist(tour[i], tour[i+1]) for i in range(len(tour)-1))
-
 cacheCornerHeuristic = {}
 def get_ga_heuristic(start, goal, problem: CornersProblem, corner_index):
     global cacheCornerHeuristic
@@ -578,6 +525,11 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
 
+def max_manel_charbel_new_heuristic(start, goal):
+    manhattan_distance = lambda x, y: abs(x[0] - y[0]) + abs(x[1] - y[1])
+    euclidean_distance = lambda x, y: math.sqrt((x[0] - y[0])**2 + (x[1] - y[1])**2)
+    return max(manhattan_distance(start, goal), euclidean_distance(start, goal))
+    
 def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     Your heuristic for the FoodSearchProblem goes here.
@@ -615,91 +567,58 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
         return 0
     if len(food_list) == 1:
         return mazeDistance(position, food_list[0], problem.startingGameState)
-    
-    if len(food_list) == 2:
-        return min([mazeDistance(position, food_list[0], problem.startingGameState) + mazeDistance(food_list[0], food_list[1], problem.startingGameState),
-                    mazeDistance(position, food_list[1], problem.startingGameState) + mazeDistance(food_list[1], food_list[0], problem.startingGameState)])
-
-
-    """
-    Path found with total cost of 60 in 8.4 seconds
-    Search nodes expanded: 7489
-
-
-    lowest_y_food = food_list[0]
-    lowest_x_food = food_list[0]
-    highest_y_food = food_list[0]
-    highest_x_food = food_list[0]
-
-    for food in food_list:
-        if food[0] < lowest_x_food[0]:
-            lowest_x_food = food
-        if food[0] > highest_x_food[0]:
-            highest_x_food = food
-        if food[1] < lowest_y_food[1]:
-            lowest_y_food = food
-        if food[1] > highest_y_food[1]:
-            highest_y_food = food
-    
-
-    boundarie_list = [lowest_y_food, lowest_x_food, highest_y_food, highest_x_food]
-    permutations = list(itertools.permutations(boundarie_list))
-
-    min_cost = math.inf
-    for perm in permutations:
-        
-        perm = [position] + list(perm)
-        cost = 0
-        for i in range(len(perm)-1):
-            cost += get_ga_heuristic(perm[i], perm[i+1], problem, boundarie_list.index(perm[i+1]))(perm[i], PositionSearchProblem(
-            problem.startingGameState, start=perm[i], goal=perm[i+1], warn=False, visualize=False)
-        )
-        if cost < min_cost:
-            min_cost = cost
-    
-    return min_cost
-    """
+ 
+    closest_point = food_list[0]
+    furthest_point = food_list[0]
 
 
     """
     Path found with total cost of 60 in 13.5 seconds
     Search nodes expanded: 1844
+    # for food in food_list:
+    #     maze_distance_to_closest = 0
+    #     if str((position, closest_point)) in problem.heuristicInfo:
+    #         maze_distance_to_closest = problem.heuristicInfo[str((position, closest_point))]
+    #     else:
+    #         maze_distance_to_closest = mazeDistance(position, closest_point, problem.startingGameState)
+    #         problem.heuristicInfo[str((position, closest_point))] = maze_distance_to_closest
+        
+    #     maze_distance_to_speculated_closest = mazeDistance(position, food, problem.startingGameState)
+    #     if maze_distance_to_speculated_closest < maze_distance_to_closest:
+    #         closest_point = food
+    #         problem.heuristicInfo[str((position, closest_point))] = maze_distance_to_speculated_closest
+
+        
+    #     maze_distance_to_furthest = 0
+    #     if str((position, furthest_point)) in problem.heuristicInfo:
+    #         maze_distance_to_furthest = problem.heuristicInfo[str((position, furthest_point))]
+    #     else:
+    #         maze_distance_to_furthest = mazeDistance(position, furthest_point, problem.startingGameState)
+    #         problem.heuristicInfo[str((position, furthest_point))] = maze_distance_to_furthest
+
+    #     maze_distance_to_speculated_furthest = mazeDistance(position, food, problem.startingGameState)
+    #     if maze_distance_to_speculated_furthest > maze_distance_to_furthest:
+    #         furthest_point = food
+    #         problem.heuristicInfo[str((position, furthest_point))] = maze_distance_to_speculated_furthest
+
+    # return min([problem.heuristicInfo[str((position, closest_point))] 
+    #      + mazeDistance(closest_point, furthest_point, problem.startingGameState),
+    #             problem.heuristicInfo[str((position, furthest_point))] + mazeDistance(furthest_point, closest_point, problem.startingGameState)])
     """
-    closest_point = food_list[0]
-    furthest_point = food_list[0]
 
-
+    """
+    Path found with total cost of 60 in 6.3 seconds
+    Search nodes expanded: 2261
+    """
     for food in food_list:
-        maze_distance_to_closest = 0
-        if str((position, closest_point)) in problem.heuristicInfo:
-            maze_distance_to_closest = problem.heuristicInfo[str((position, closest_point))]
-        else:
-            maze_distance_to_closest = mazeDistance(position, closest_point, problem.startingGameState)
-            problem.heuristicInfo[str((position, closest_point))] = maze_distance_to_closest
-        
-        maze_distance_to_speculated_closest = mazeDistance(position, food, problem.startingGameState)
-        if maze_distance_to_speculated_closest < maze_distance_to_closest:
+        if max_manel_charbel_new_heuristic(food, position) < max_manel_charbel_new_heuristic(closest_point, position):
             closest_point = food
-            problem.heuristicInfo[str((position, closest_point))] = maze_distance_to_speculated_closest
-
-        
-        maze_distance_to_furthest = 0
-        if str((position, furthest_point)) in problem.heuristicInfo:
-            maze_distance_to_furthest = problem.heuristicInfo[str((position, furthest_point))]
-        else:
-            maze_distance_to_furthest = mazeDistance(position, furthest_point, problem.startingGameState)
-            problem.heuristicInfo[str((position, furthest_point))] = maze_distance_to_furthest
-
-        maze_distance_to_speculated_furthest = mazeDistance(position, food, problem.startingGameState)
-        if maze_distance_to_speculated_furthest > maze_distance_to_furthest:
+        if max_manel_charbel_new_heuristic(food, position) > max_manel_charbel_new_heuristic(furthest_point, position):
             furthest_point = food
-            problem.heuristicInfo[str((position, furthest_point))] = maze_distance_to_speculated_furthest
+        
 
-
-    return min([problem.heuristicInfo[str((position, closest_point))] 
-         + mazeDistance(closest_point, furthest_point, problem.startingGameState),
-                problem.heuristicInfo[str((position, furthest_point))] + mazeDistance(furthest_point, closest_point, problem.startingGameState)])
-    
+    return min([mazeDistance(position, closest_point, problem.startingGameState) + mazeDistance(closest_point, furthest_point, problem.startingGameState),
+                mazeDistance(position, furthest_point, problem.startingGameState) + mazeDistance(furthest_point, closest_point, problem.startingGameState)])
 
 
 
