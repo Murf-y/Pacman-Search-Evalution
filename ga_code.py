@@ -329,7 +329,7 @@ def run_ga(given_problem, algorithm):
         n_iterations = 32,
         lchrom = len(HEURISTICS_LIST), 
         pcross = 0.85, 
-        pmutation = 0.09, 
+        pmutation = 0.1, 
         crossover_type = 'one_point', 
         mutation_type = 'bitstring', 
         selection_type = 'ranking', 
@@ -340,9 +340,7 @@ def run_ga(given_problem, algorithm):
         algorithm= algorithm
     )
     best_solution, best_fitness = ga.optimize()
-    ga.view_fitness_evolution()
-
-    print('Best solution: ', best_solution)
+    # print('Best solution: ', best_solution)
     best_heuristic = ga.get_new_function_from_set_of_h(ga.get_heuristic_set_from_ind(best_solution))
 
     return best_heuristic
