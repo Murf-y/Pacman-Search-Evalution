@@ -587,7 +587,8 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
         if estimated_distance_to_speculated_furthest > estimated_distance_to_furthest:
             furthest_point = food
             problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_speculated_furthest
-        
+    
+    # TODO remove exactDistance and use a heuristic instead (wait for GA RESULTS)
     return exactDistanceUsingAStar(position, closest_point, problem.startingGameState) + heuristic_found_by_ga_for_corners_problem(closest_point, furthest_point)
 
 

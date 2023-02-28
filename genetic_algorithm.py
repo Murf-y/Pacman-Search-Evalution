@@ -203,7 +203,7 @@ class GeneticAlgorithm:
                     if estimated_distance_to_speculated_furthest > estimated_distance_to_furthest:
                         furthest_point = food
                         problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_speculated_furthest
-                return exactDistanceUsingAStar(position, closest_point, problem.startingGameState) + wrapper_function(closest_point, furthest_point)
+                return wrapper_function(position, closest_point) + wrapper_function(closest_point, furthest_point)
             
         return new_heuristic
 
@@ -415,19 +415,21 @@ def main():
         'min' : min,
         'mean' : lambda x: sum(x)/len(x),
         'mode' : lambda x: max(set(x), key=x.count),
-        'sum' : sum,
-        'product' : lambda x: reduce(operator.mul, x, 1),
         'median' : lambda x: median(x),
         'range': lambda x: max(x) - min(x),
     }
     
+
+    # game_to_train_on = GameWrapper("mediumCorners", CornersProblem, GaAgentCornerns)
+
+    # OR
 
     game_to_train_on = GameWrapper("trickySearch", FoodSearchProblem, GaAgentFood)
 
     for method in method_of_joining_heuristics:
         ga = GeneticAlgorithm(
             n_genes = len(HEURISTICS_LIST),
-            n_iterations = 30,
+            n_iterations = 20,
             lchrom = len(HEURISTICS_LIST), 
             pcross = 0.8, 
             pmutation = 0.3, 
