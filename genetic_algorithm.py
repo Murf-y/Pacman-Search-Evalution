@@ -11,48 +11,38 @@ Original file is located at
 
 import os
 import numpy as np
-from livelossplot.inputs.keras import PlotLossesCallback
-from sklearn.metrics import accuracy_score
-from scipy import stats
 from statistics import mode, mean
 import math
-import inspect
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-import copy
+import itertools
+from functools import reduce
+import operator
 
-
+from search import aStarSearch
+from searchAgents import CornersProblem, SearchAgent
+import pacman
+import layout
 
 """# Heuristics"""
 
-def manhattan_distance(current, problem):
-    goal = problem.goal
+def manhattan_distance(current, goal):
     return abs(current[0] - goal[0]) + abs(current[1] - goal[1])
 
-def euclidean_distance(current, problem):
-    goal = problem.goal
+def euclidean_distance(current, goal):
     return math.sqrt((current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2)
 
-def max_heuristic(current, problem):
-    goal = problem.goal
+def max_heuristic(current, goal):
     return max(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
 
-def min_heuristic(current, problem):
-    goal = problem.goal
+def min_heuristic(current, goal):
     return min(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
 
-def diagonal_distance(current, problem):
-    goal = problem.goal
+def diagonal_distance(current, goal):
     dx = abs(current[0] - goal[0])
     dy = abs(current[1] - goal[1])
     return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)
 
 
-HEURISTICS_LIST = [
-    manhattan_distance,
-    euclidean_distance,
-    diagonal_distance,   
-]
 
 class GeneticAlgorithm:
 
@@ -67,8 +57,10 @@ class GeneticAlgorithm:
                  selection_type, 
                  popsize, 
                  n_elites,
-                 problem,
-                 random_state = None, algorithm = None):
+                 game_to_train_on,
+                 method_of_joining_heuristics,
+                 heuristics_list,
+                 random_state = None):
         
 
         self.n_genes = n_genes
@@ -82,8 +74,9 @@ class GeneticAlgorithm:
         self.random_state = random_state
         self.n_iterations = n_iterations
         self.n_elites = n_elites
-        self.problem = problem
-        self.algorithm = algorithm
+        self.game_to_train_on = game_to_train_on
+        self.method_of_joining_heuristics = method_of_joining_heuristics
+        self.heuristics_list = heuristics_list
         self.best_fitness_evolution = []
     
         pop = []
@@ -97,40 +90,70 @@ class GeneticAlgorithm:
         # Convert pop to list of solutions
         self.population = [tuple(x) for x in pop]
 
+    
+    
     def fitness_func(self, solution):
         # should maximize
-
         c = 3
         epsilon = 10**(-c)
-        problem_copy = copy.deepcopy(self.problem)
 
-        # if all 0 in solution, return 1
-        if sum(solution) == 0:
-            return epsilon
+        gameState = pacman.GameState()
+        lay = layout.getLayout(self.game_to_train_on.layoutName)
+        gameState.initialize(lay, 0)
+        problem = self.game_to_train_on.problemClass(gameState)
+        state = problem.getStartState()
+
         set_of_h = self.get_heuristic_set_from_ind(individual=solution)
-        
         new_heuristic = self.get_new_function_from_set_of_h(set_of_h)
-        
-        self.algorithm(problem_copy, heuristic=new_heuristic)
-        cost = problem_copy._expanded
+
+        agent = self.game_to_train_on.agentClass(new_heuristic)
+        agent.searchFunction(problem)
+        cost = problem._expanded
+
         if cost == 0:
             return epsilon
         else:
             return (1/cost)*(10**c)
+
     def get_heuristic_set_from_ind(self, individual):
         set_of_h = []
         for _ in range(len(individual)):
                 if individual[_]:
-                    set_of_h.append(HEURISTICS_LIST[_])
+                    set_of_h.append(self.heuristics_list[_])
         return set_of_h
     
+    """
+    TODO: modify this function for each problem
+    """
     def get_new_function_from_set_of_h(self, set_of_h):
         def new_heuristic(state, problem):
-            values = [h(state, problem) for h in set_of_h]
-            if len(set_of_h) == 0:
-              return 0
+            def wrapper_function(start, goal):
+                values = [h(start, goal) for h in set_of_h]
+                if len(set_of_h) == 0:
+                  return 0
+
+                return self.method_of_joining_heuristics(values)
             
-            return max(values)
+            unvisited_corners = problem.unvistedCorners(state)
+            if len(unvisited_corners) == 0:
+                return 0
+    
+            if len(unvisited_corners) == 1:
+                return wrapper_function(state.position, unvisited_corners[0])
+
+
+            perms = itertools.permutations(unvisited_corners)
+            min_cost = float('inf')
+            for perm in perms:
+                perm = [state.position] + list(perm)
+
+                cost = 0
+                for i in range(len(perm)-1):
+                    cost += wrapper_function(perm[i], perm[i+1])
+                if cost < min_cost:
+                    min_cost = cost
+            return min_cost
+            
         return new_heuristic
 
     def get_fitness_scores(self):
@@ -259,7 +282,7 @@ class GeneticAlgorithm:
 
     def optimize(self):
 
-        for i in range(self.n_iterations):
+        for i in tqdm(range(self.n_iterations)):
 
             # calculate fitness score
             scores = self.get_fitness_scores()
@@ -313,35 +336,73 @@ class GeneticAlgorithm:
         return (best_solution, self.best_fitness_evolution[-1])
 
 
-    # run the genetic algorithm
-    def view_fitness_evolution(self):
-        plt.plot(
-            range(len(self.best_fitness_evolution)),
-            self.best_fitness_evolution
+class GameWrapper:
+    def __init__(self, layoutName, problemClass, agentClass):
+        self.layoutName = layoutName
+        self.problemClass = problemClass
+        self.agentClass = agentClass
+
+class GaAgentCornerns(SearchAgent):
+        "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
+        def __init__(self, heuristic):
+            self.searchFunction = lambda prob: aStarSearch(prob, heuristic)
+            self.searchType = CornersProblem
+def main():
+    HEURISTICS_LIST = [
+        manhattan_distance,
+        euclidean_distance,
+        diagonal_distance,   
+        max_heuristic,
+        min_heuristic
+    ]
+
+    method_of_joining_heuristics = {
+        'max' : max,
+        'min' : min,
+        'mean' : lambda x: sum(x)/len(x),
+        'mode' : lambda x: max(set(x), key=x.count),
+        'sum' : sum,
+        'product' : lambda x: reduce(operator.mul, x, 1),
+        'median' : lambda x: statistics.median(x),
+        'stdev' : lambda x: statistics.stdev(x),
+        'variance' : lambda x: statistics.variance(x),
+        
+    }
+    
+
+    game_to_train_on = GameWrapper("mediumCorners", CornersProblem, GaAgentCornerns)
+
+    for method in method_of_joining_heuristics:
+        ga = GeneticAlgorithm(
+            n_genes = len(HEURISTICS_LIST),
+            n_iterations = 20,
+            lchrom = len(HEURISTICS_LIST), 
+            pcross = 0.8, 
+            pmutation = 0.2, 
+            crossover_type = 'one_point', 
+            mutation_type = 'bitstring', 
+            selection_type = 'ranking', 
+            popsize = 20,
+            n_elites = 2,
+            random_state = 11,
+            game_to_train_on = game_to_train_on,
+            method_of_joining_heuristics = method_of_joining_heuristics[method],
+            heuristics_list = HEURISTICS_LIST
         )
 
+        best_solution, best_fitness = ga.optimize()
+        print('\nBest solution:\t', best_solution)
 
+        print('\nBest Fitness:\t', round(best_fitness))
+        print('\nBest Cost:\t', round(1/best_fitness * (10**3)))
 
-
-def run_ga(given_problem, algorithm):
-    ga = GeneticAlgorithm(
-        n_genes = len(HEURISTICS_LIST),
-        n_iterations = 32,
-        lchrom = len(HEURISTICS_LIST), 
-        pcross = 0.85, 
-        pmutation = 0.1, 
-        crossover_type = 'one_point', 
-        mutation_type = 'bitstring', 
-        selection_type = 'ranking', 
-        popsize = 10,
-        n_elites = 2,
-        problem = given_problem,
-        random_state = 11,
-        algorithm= algorithm
-    )
-    best_solution, best_fitness = ga.optimize()
-    # print('Best solution: ', best_solution)
-    best_heuristic = ga.get_new_function_from_set_of_h(ga.get_heuristic_set_from_ind(best_solution))
-
-    return best_heuristic
-    
+        print("\nBest solution is made of:\t", end="")
+        print(method.upper()
+         + "( ", end="")
+        for index, is_included in enumerate(best_solution):
+            if is_included:
+                print(HEURISTICS_LIST[index].__name__ + ",  ", end="")
+        print(")")
+        print("\n\n----------------------------------\n\n")
+if __name__ == "__main__":
+    main()

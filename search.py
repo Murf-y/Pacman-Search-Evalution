@@ -18,7 +18,6 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
-import ga_code as ga
 
 class SearchProblem:
     """

@@ -43,7 +43,6 @@ import time
 import search
 import pacman
 from typing import List, Tuple, Any
-from ga_code import run_ga
 import itertools
 import math
 
@@ -384,29 +383,25 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
-cacheCornerHeuristic = {}
-def get_ga_heuristic(start, goal, problem: CornersProblem, corner_index):
-    global cacheCornerHeuristic
+def heuristic_found_by_ga_for_corners_problem(start, goal):
+    """
+    A heuristic for the CornersProblem found by running: python genetic_algorithm.py
 
-    if corner_index in cacheCornerHeuristic:
-        return cacheCornerHeuristic[corner_index]
-    
-    position_search_problem = PositionSearchProblem(problem.startingGameState, start=start, goal=goal, warn=False, visualize=False)
+    result:
 
-    ga_heuristic = run_ga(position_search_problem, search.aStarSearch)
-    cacheCornerHeuristic[corner_index] = ga_heuristic
-    return ga_heuristic
+    SUM( manhattan_distance,  euclidean_distance,  diagonal_distance,  )
+    """
 
-def max_manel_charbel_new_heuristic(start, goal, problem):
-    manhattan_distance = lambda x, y: abs(x[0] - y[0]) + abs(x[1] - y[1])
-    euclidean_distance = lambda x, y: math.sqrt((x[0] - y[0])**2 + (x[1] - y[1])**2)
-    ga_func = lambda x, y: get_ga_heuristic(start, goal, problem, 0)(start, PositionSearchProblem(problem.startingGameState, start=start, goal=goal, warn=False, visualize=False))
-    list_heuristic = [
-        # manhattan_distance,
-        # euclidean_distance,
-        ga_func
-    ]
-    return max([h(start, goal) for h in list_heuristic])
+    x1, y1 = start
+    x2, y2 = goal
+
+    manhattan_distance = abs(x1 - x2) + abs(y1 - y2)
+    euclidean_distance = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+    diagonal_distance = abs(x1 - x2) + abs(y1 - y2)
+    max_heuristic = max(abs(x1 - x2), abs(y1 - y2))
+    min_heuristic = min(abs(x1 - x2), abs(y1 - y2))
+
+    return max(diagonal_distance, max_heuristic)
     
 def cornersHeuristic(state: Any, problem: CornersProblem):
     """
@@ -427,50 +422,8 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     "*** YOUR CODE HERE ***"
     
     unvisited_corners = problem.unvistedCorners(state)
-    """
-    Path found with total cost of 60 in 13.5 seconds
-    Search nodes expanded: 1844
-    position = state.position
-    if len(unvisited_corners) == 0:
-        return 0
-    if len(unvisited_corners) == 1:
-        return mazeDistance(position, unvisited_corners[0], problem.startingGameState)
     
-    closest_point = unvisited_corners[0]
-    furthest_point = unvisited_corners[0]
-
-
-    for corner in unvisited_corners:
-        maze_distance_to_closest = 0
-        if str((position, closest_point)) in problem.heuristicInfo:
-            maze_distance_to_closest = problem.heuristicInfo[str((position, closest_point))]
-        else:
-            maze_distance_to_closest = mazeDistance(position, closest_point, problem.startingGameState)
-            problem.heuristicInfo[str((position, closest_point))] = maze_distance_to_closest
         
-        maze_distance_to_speculated_closest = mazeDistance(position, corner, problem.startingGameState)
-        if maze_distance_to_speculated_closest < maze_distance_to_closest:
-            closest_point = corner
-            problem.heuristicInfo[str((position, closest_point))] = maze_distance_to_speculated_closest
-
-        
-        maze_distance_to_furthest = 0
-        if str((position, furthest_point)) in problem.heuristicInfo:
-            maze_distance_to_furthest = problem.heuristicInfo[str((position, furthest_point))]
-        else:
-            maze_distance_to_furthest = mazeDistance(position, furthest_point, problem.startingGameState)
-            problem.heuristicInfo[str((position, furthest_point))] = maze_distance_to_furthest
-
-        maze_distance_to_speculated_furthest = mazeDistance(position, corner, problem.startingGameState)
-        if maze_distance_to_speculated_furthest > maze_distance_to_furthest:
-            furthest_point = corner
-            problem.heuristicInfo[str((position, furthest_point))] = maze_distance_to_speculated_furthest
-
-    return problem.heuristicInfo[str((position, closest_point))] + mazeDistance(closest_point, furthest_point, problem.startingGameState)
-    """
-
-
-    
     """
     Path found with total cost of 106 in 0.1 seconds
     Search nodes expanded: 741
@@ -479,7 +432,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
         return 0
     
     if len(unvisited_corners) == 1:
-        return max_manel_charbel_new_heuristic(state.position, unvisited_corners[0], problem)
+        return heuristic_found_by_ga_for_corners_problem(state.position, unvisited_corners[0])
     
 
     perms = itertools.permutations(unvisited_corners)
@@ -489,7 +442,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
         cost = 0
         for i in range(len(perm)-1):
-            cost += max_manel_charbel_new_heuristic(perm[i], perm[i+1], problem)
+            cost += heuristic_found_by_ga_for_corners_problem(perm[i], perm[i+1])
         if cost < min_cost:
             min_cost = cost
     return min_cost
