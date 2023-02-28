@@ -11,7 +11,7 @@ Original file is located at
 
 import os
 import numpy as np
-from statistics import mode, mean
+from statistics import mode, mean, median, stdev, variance, quantiles
 import math
 from tqdm import tqdm
 import itertools
@@ -42,6 +42,14 @@ def diagonal_distance(current, goal):
     dy = abs(current[1] - goal[1])
     return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)
 
+def euclidean_squared(current, goal):
+    return (current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2
+
+def null_heuristic(current, goal):
+    return 0
+
+def mean_heuristic(current, goal):
+    return (abs(current[0] - goal[0]) + abs(current[1] - goal[1]))/2
 
 
 class GeneticAlgorithm:
@@ -209,9 +217,7 @@ class GeneticAlgorithm:
                     parent1, 
                     parent2, 
                     crossover_type,
-                    pcross, 
-                    pmutation, 
-                    mutation_type, 
+                    pcross,
                     lchrom):
         
         if crossover_type not in ['uniform', 'one_point', 'two_point']:
@@ -225,19 +231,12 @@ class GeneticAlgorithm:
 
             child1 = parent1[:index] + parent2[index:]
             child2 = parent2[:index] + parent1[index:]
-
-            if self.flip(pmutation):
-                child1 = self.__mutation(child1, mutation_type, pmutation)
-
-            if self.flip(pmutation):
-                child2 = self.__mutation(child2, mutation_type, pmutation)
-
             children = [tuple(child1), tuple(child2)]
         elif crossover_type == 'two_point':
             point1 = np.random.choice(range(1, lchrom)) 
             point2 = np.random.choice(point1, range(lchrom))
-            child1 = self.__mutation(parent1[:point1] + parent2[point1: point2] + parent1[point2:],  mutation_type, pmutation, nmutation)
-            child2 = self.__mutation(parent2[:point1] + parent1[point1: point2] + parent2[point2:], mutation_type, pmutation, nmutation)
+            child1 = parent1[:point1] + parent2[point1: point2] + parent1[point2:]
+            child2 = parent2[:point1] + parent1[point1: point2] + parent2[point2:]
             children = [child1, child2]
         elif crossover_type == 'uniform':
            
@@ -256,7 +255,7 @@ class GeneticAlgorithm:
     
 
 
-    def __mutation(self, individual, mutation_type, pmutation):
+    def __mutation(self, individual, mutation_type):
 
         if mutation_type not in ['bitstring', 'inversion', 'swap']:
             raise ValueError('mutation_type should be one of bitstring or inversion or swap')
@@ -307,11 +306,17 @@ class GeneticAlgorithm:
                 mate2 = tuple(self.population[mate2])
 
                 if self.flip(self.pcross):
-                    children = self.__crossover(mate1, mate2, self.crossover_type, self.pcross, self.pmutation, self.mutation_type, self.lchrom)
+                    children = self.__crossover(mate1, mate2, self.crossover_type, self.pcross, self.lchrom)
                     children = [tuple(child) for child in children]
                 else:
                     children = [mate1, mate2]
                 
+                if self.flip(self.pmutation):
+                    children[0] = self.__mutation(children[0], self.mutation_type)
+
+                if self.flip(self.pmutation):
+                    children[1] = self.__mutation(children[1], self.mutation_type)
+
                 if sum(tuple(children[0])) != 0:
                     new_population.append(tuple(children[0]))
                     j+=1
@@ -343,7 +348,6 @@ class GameWrapper:
         self.agentClass = agentClass
 
 class GaAgentCornerns(SearchAgent):
-        "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
         def __init__(self, heuristic):
             self.searchFunction = lambda prob: aStarSearch(prob, heuristic)
             self.searchType = CornersProblem
@@ -353,7 +357,11 @@ def main():
         euclidean_distance,
         diagonal_distance,   
         max_heuristic,
-        min_heuristic
+        min_heuristic,
+        null_heuristic,
+        # euclidean_squared,
+        # mean_heuristic,
+
     ]
 
     method_of_joining_heuristics = {
@@ -363,10 +371,8 @@ def main():
         'mode' : lambda x: max(set(x), key=x.count),
         'sum' : sum,
         'product' : lambda x: reduce(operator.mul, x, 1),
-        'median' : lambda x: statistics.median(x),
-        'stdev' : lambda x: statistics.stdev(x),
-        'variance' : lambda x: statistics.variance(x),
-        
+        'median' : lambda x: median(x),
+        'range': lambda x: max(x) - min(x),
     }
     
 
@@ -375,10 +381,10 @@ def main():
     for method in method_of_joining_heuristics:
         ga = GeneticAlgorithm(
             n_genes = len(HEURISTICS_LIST),
-            n_iterations = 20,
+            n_iterations = 30,
             lchrom = len(HEURISTICS_LIST), 
             pcross = 0.8, 
-            pmutation = 0.2, 
+            pmutation = 0.3, 
             crossover_type = 'one_point', 
             mutation_type = 'bitstring', 
             selection_type = 'ranking', 
@@ -394,7 +400,7 @@ def main():
         print('\nBest solution:\t', best_solution)
 
         print('\nBest Fitness:\t', round(best_fitness))
-        print('\nBest Cost:\t', round(1/best_fitness * (10**3)))
+        print('\nBest Cost (number of nodes expanded):\t', round(1/best_fitness * (10**3)))
 
         print("\nBest solution is made of:\t", end="")
         print(method.upper()

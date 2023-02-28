@@ -389,7 +389,7 @@ def heuristic_found_by_ga_for_corners_problem(start, goal):
 
     result:
 
-    SUM( manhattan_distance,  euclidean_distance,  diagonal_distance,  )
+    MAX( manhattan_distance,  euclidean_distance,  min_heuristic,  null_heuristic,  )
     """
 
     x1, y1 = start
@@ -400,8 +400,11 @@ def heuristic_found_by_ga_for_corners_problem(start, goal):
     diagonal_distance = abs(x1 - x2) + abs(y1 - y2)
     max_heuristic = max(abs(x1 - x2), abs(y1 - y2))
     min_heuristic = min(abs(x1 - x2), abs(y1 - y2))
+    mean_heuristic = (abs(x1 - x2) + abs(y1 - y2)) / 2
+    euclidean_squared = (x1 - x2) ** 2 + (y1 - y2) ** 2
+    null_heuristic = 0
 
-    return max(diagonal_distance, max_heuristic)
+    return max(manhattan_distance, euclidean_distance, min_heuristic, null_heuristic)
     
 def cornersHeuristic(state: Any, problem: CornersProblem):
     """
