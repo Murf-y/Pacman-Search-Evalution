@@ -19,7 +19,7 @@ from functools import reduce
 import operator
 
 from search import aStarSearch
-from searchAgents import CornersProblem, SearchAgent
+from searchAgents import CornersProblem, SearchAgent, FoodSearchProblem
 import pacman
 import layout
 
@@ -50,7 +50,6 @@ def null_heuristic(current, goal):
 
 def mean_heuristic(current, goal):
     return (abs(current[0] - goal[0]) + abs(current[1] - goal[1]))/2
-
 
 class GeneticAlgorithm:
 
@@ -130,9 +129,6 @@ class GeneticAlgorithm:
                     set_of_h.append(self.heuristics_list[_])
         return set_of_h
     
-    """
-    TODO: modify this function for each problem
-    """
     def get_new_function_from_set_of_h(self, set_of_h):
         def new_heuristic(state, problem):
             def wrapper_function(start, goal):
@@ -142,25 +138,72 @@ class GeneticAlgorithm:
 
                 return self.method_of_joining_heuristics(values)
             
-            unvisited_corners = problem.unvistedCorners(state)
-            if len(unvisited_corners) == 0:
-                return 0
-    
-            if len(unvisited_corners) == 1:
-                return wrapper_function(state.position, unvisited_corners[0])
+            """
+            SAME AS cornerHeuristic but for a geneticAlgorithm
+            """
+            if self.game_to_train_on.problemClass == CornersProblem:
+                unvisited_corners = problem.unvistedCorners(state)
+                if len(unvisited_corners) == 0:
+                    return 0
+
+                if len(unvisited_corners) == 1:
+                    return wrapper_function(state.position, unvisited_corners[0])
 
 
-            perms = itertools.permutations(unvisited_corners)
-            min_cost = float('inf')
-            for perm in perms:
-                perm = [state.position] + list(perm)
+                perms = itertools.permutations(unvisited_corners)
+                min_cost = float('inf')
+                for perm in perms:
+                    perm = [state.position] + list(perm)
 
-                cost = 0
-                for i in range(len(perm)-1):
-                    cost += wrapper_function(perm[i], perm[i+1])
-                if cost < min_cost:
-                    min_cost = cost
-            return min_cost
+                    cost = 0
+                    for i in range(len(perm)-1):
+                        cost += wrapper_function(perm[i], perm[i+1])
+                    if cost < min_cost:
+                        min_cost = cost
+                return min_cost
+
+            """
+            SAME AS foodHeuristic but for a geneticAlgorithm
+            """
+            if self.game_to_train_on.problemClass == FoodSearchProblem:
+                position, foodGrid = state
+
+                food_list = foodGrid.asList()
+
+                if len(food_list) == 0:
+                    return 0
+                if len(food_list) == 1:
+                    return wrapper_function(position, food_list[0])
+
+                closest_point = food_list[0]
+                furthest_point = food_list[0]
+
+                for food in food_list:
+                    estimated_distance_to_closest = 0
+                    if str((position, closest_point)) in problem.heuristicInfo:
+                        estimated_distance_to_closest = problem.heuristicInfo[str((position, closest_point))]
+                    else:
+                        estimated_distance_to_closest = wrapper_function(position, closest_point)
+                        problem.heuristicInfo[str((position, closest_point))] = estimated_distance_to_closest
+                    
+                    estimated_distance_to_speculated_closest = wrapper_function(position, food)
+                    if estimated_distance_to_speculated_closest < estimated_distance_to_closest:
+                        closest_point = food
+                        problem.heuristicInfo[str((position, closest_point))] = estimated_distance_to_speculated_closest
+                    
+                    
+                    estimated_distance_to_furthest = 0
+                    if str((position, furthest_point)) in problem.heuristicInfo:
+                        estimated_distance_to_furthest = problem.heuristicInfo[str((position, furthest_point))]
+                    else:
+                        estimated_distance_to_furthest = wrapper_function(position, furthest_point)
+                        problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_furthest
+                    
+                    estimated_distance_to_speculated_furthest = wrapper_function(position, food)
+                    if estimated_distance_to_speculated_furthest > estimated_distance_to_furthest:
+                        furthest_point = food
+                        problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_speculated_furthest
+                return exactDistanceUsingAStar(position, closest_point, problem.startingGameState) + wrapper_function(closest_point, furthest_point)
             
         return new_heuristic
 
@@ -351,6 +394,12 @@ class GaAgentCornerns(SearchAgent):
         def __init__(self, heuristic):
             self.searchFunction = lambda prob: aStarSearch(prob, heuristic)
             self.searchType = CornersProblem
+
+class GaAgentFood(SearchAgent):
+    def __init__(self, heuristic):
+        self.searchFunction = lambda prob: aStarSearch(prob, heuristic)
+        self.searchType = FoodSearchProblem
+
 def main():
     HEURISTICS_LIST = [
         manhattan_distance,
@@ -373,7 +422,7 @@ def main():
     }
     
 
-    game_to_train_on = GameWrapper("mediumCorners", CornersProblem, GaAgentCornerns)
+    game_to_train_on = GameWrapper("trickySearch", FoodSearchProblem, GaAgentFood)
 
     for method in method_of_joining_heuristics:
         ga = GeneticAlgorithm(

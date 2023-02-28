@@ -434,6 +434,7 @@ We used a genetic algorithm to find the best heuristic function.
 In <code>genetic_algorithm.py</code> you can modify on which maze you want to train ("tinyCorners", "mediumCorners", "bigCorners")
 <br>
 To run:
+<pre>python install -r requirements.txt</pre>
 <pre>python genetic_algorithm.py</pre>
 
 <h3><strong>How it works:</strong></h3>
@@ -579,6 +580,15 @@ Pacman emerges victorious! Score: 378.0
 In this problem, we implemented the <code>foodHeuristic</code> function in <code>searchAgents.py</code> to return the heuristic value of the current state.
 
 We created a <code>Admissible</code> and <code>Consistent</code> heuristic function.
+
+<h2>How it Works:</h2>
+We created a <code>exactDistanceUsingAStar(start, goal)</code> function that returns the actual cost of the path from the start to the goal using the <code>AStarSearch</code> algorithm and manhattan distance<br>
+Then we found <code>closest_food</code> and <code>furthest_food</code> using <code>heuristic_found_by_ga_for_food_problem</code> <br>
+Then we returned the heuristic value as:
+
+<pre>
+    return exactDistance(start, closest_food) + heuristic_found_by_ga_for_corners_problem(closest_food, furthest_food)
+</pre>
 
 <h2>Test Cases</h2>
 

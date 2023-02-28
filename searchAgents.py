@@ -553,58 +553,42 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     if len(food_list) == 0:
         return 0
     if len(food_list) == 1:
-        return exactDistanceUsingAStar(position, food_list[0], problem.startingGameState)
+        return heuristic_found_by_ga_for_corners_problem(position, food_list[0])
     
     closest_point = food_list[0]
     furthest_point = food_list[0]
 
 
     """
-    Path found with total cost of 60 in 13.5 seconds
-    Search nodes expanded: 1844
+    Path found with total cost of 60 in 1.6 seconds
+    Search nodes expanded: 4987
     """
     for food in food_list:
-        exact_distance_to_closest = 0
+        estimated_distance_to_closest = 0
         if str((position, closest_point)) in problem.heuristicInfo:
-            exact_distance_to_closest = problem.heuristicInfo[str((position, closest_point))]
+            estimated_distance_to_closest = problem.heuristicInfo[str((position, closest_point))]
         else:
-            exact_distance_to_closest = exactDistanceUsingAStar(position, closest_point, problem.startingGameState)
-            problem.heuristicInfo[str((position, closest_point))] = exact_distance_to_closest
+            estimated_distance_to_closest = heuristic_found_by_ga_for_corners_problem(position, closest_point)
+            problem.heuristicInfo[str((position, closest_point))] = estimated_distance_to_closest
         
-        exact_distance_to_speculated_closest = exactDistanceUsingAStar(position, food, problem.startingGameState)
-        if exact_distance_to_speculated_closest < exact_distance_to_closest:
+        estimated_distance_to_speculated_closest = heuristic_found_by_ga_for_corners_problem(position, food)
+        if estimated_distance_to_speculated_closest < estimated_distance_to_closest:
             closest_point = food
-            problem.heuristicInfo[str((position, closest_point))] = exact_distance_to_speculated_closest
-
+            problem.heuristicInfo[str((position, closest_point))] = estimated_distance_to_speculated_closest
         
-        exact_distance_to_furthest = 0
+        estimated_distance_to_furthest = 0
         if str((position, furthest_point)) in problem.heuristicInfo:
-            exact_distance_to_furthest = problem.heuristicInfo[str((position, furthest_point))]
+            estimated_distance_to_furthest = problem.heuristicInfo[str((position, furthest_point))]
         else:
-            exact_distance_to_furthest = exactDistanceUsingAStar(position, furthest_point, problem.startingGameState)
-            problem.heuristicInfo[str((position, furthest_point))] = exact_distance_to_furthest
-
-        exact_distance_to_speculated_furthest = exactDistanceUsingAStar(position, food, problem.startingGameState)
-        if exact_distance_to_speculated_furthest > exact_distance_to_furthest:
-            furthest_point = food
-            problem.heuristicInfo[str((position, furthest_point))] = exact_distance_to_speculated_furthest
-
-    return problem.heuristicInfo[str((position, closest_point))] + exactDistanceUsingAStar(closest_point, furthest_point, problem.startingGameState)
-
-    """
-    INCOSISTENT DO NOT USE IT 
-    Path found with total cost of 60 in 6.3 seconds
-    Search nodes expanded: 2261
-    for food in food_list:
-        if max_manel_charbel_new_heuristic(food, position, problem) < max_manel_charbel_new_heuristic(closest_point, position, problem):
-            closest_point = food
-        if max_manel_charbel_new_heuristic(food, position, problem) > max_manel_charbel_new_heuristic(furthest_point, position, problem):
-            furthest_point = food
+            estimated_distance_to_furthest = heuristic_found_by_ga_for_corners_problem(position, furthest_point)
+            problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_furthest
         
-
-    return min([mazeDistance(position, closest_point, problem.startingGameState) + mazeDistance(closest_point, furthest_point, problem.startingGameState),
-                mazeDistance(position, furthest_point, problem.startingGameState) + mazeDistance(furthest_point, closest_point, problem.startingGameState)])
-    """
+        estimated_distance_to_speculated_furthest = heuristic_found_by_ga_for_corners_problem(position, food)
+        if estimated_distance_to_speculated_furthest > estimated_distance_to_furthest:
+            furthest_point = food
+            problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_speculated_furthest
+        
+    return exactDistanceUsingAStar(position, closest_point, problem.startingGameState) + heuristic_found_by_ga_for_corners_problem(closest_point, furthest_point)
 
 
 
