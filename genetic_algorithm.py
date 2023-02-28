@@ -358,10 +358,7 @@ def main():
         diagonal_distance,   
         max_heuristic,
         min_heuristic,
-        null_heuristic,
-        # euclidean_squared,
-        # mean_heuristic,
-
+        null_heuristic
     ]
 
     method_of_joining_heuristics = {

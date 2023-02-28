@@ -418,38 +418,122 @@ Pacman emerges victorious! Score: 434
 <br>
 
 <h1 id="q6">🚩 Question 6: Corners Problem: Heuristic</h1>
-
+<p align="center">
+<img src="./gifs/q6.gif" width="500"></img>
+</p>
 In this problem, we implemented the <code>cornersHeuristic</code> function in <code>searchAgents.py</code> to return the heuristic value of the current state.
 
-We created a <code>Admissible</code> and <code>Consistent</code> heuristic function.
-
-<h2>Genetic Algorithm</h2>
-We used a genetic algorithm to find the best heuristic function.
+We created a <code>Admissible</code> and <code>Consistent</code> heuristic function <code>heuristic_found_by_ga_for_corners_problem</code> found in <code>searchAgents.py</code>
 
 <ol>
-<li> Encoding </li>
-We encoded the heuristic function as a list of 4 values, each value represents the weight of the heuristic function for each corner.
+<li><h2>How we created it:</h2>
+<h2><strong>Genetic Algorithm</strong></h2>
+We used a genetic algorithm to find the best heuristic function.
 
-<li> Fitness Function </li>
-We used the <code>scoreEvaluationFunction</code> function to evaluate the fitness of each heuristic function. Which is <code>1/number_of_nodes_expanded</code> and thus we wanted to minimize the number of nodes expanded by maximizing the fitness.
+<h3><strong>Try it yourself:</strong></h3>
+In <code>genetic_algorithm.py</code> you can modify on which maze you want to train ("tinyCorners", "mediumCorners", "bigCorners")
+<br>
+To run:
+<pre>python genetic_algorithm.py</pre>
 
-<li> Selection </li>
-We used <code>roulette wheel selection</code> to select the best heuristic functions.
+<h3><strong>How it works:</strong></h3>
+<ol>
+<li> <strong>Encoding</strong></li>
+A chromosome is a set of 0 and 1 (i.e. <code>010011</code>) where each digit, represent whether its corresponding heuristic is used.<br>
+The full list of heuristic functions is:
+<pre>
+    HEURISTICS_LIST = [
+        manhattan_distance,
+        euclidean_distance,
+        diagonal_distance,
+        max_heuristic,
+        min_heuristic,
+        null_heuristic
+    ]
+</pre>
+How? look  at the below example:
+<pre>010011</pre>
+means that
+<pre>euclidean_distance,  min_heuristic,  null_heuristic</pre>
+are being used
+<br>
+<br>
+<br>
+<li> <strong>Fitness Function </strong></li>
+To evaluate the fitness of a chromosome, we ran aStarSrarch on the problem where the heuristic used is <code>new_heuristic</code> and we returned:<br>
+<pre>(1/nodes_expanded)*(10**c)</pre>
+Where c is a small integer just to make even small changes in nodes_expanded a more valuable thing to the algorithm
 
-<li> Crossover </li>
+<br>
+<code>new_heuristic</code> is defined as follow (pseudo code):
+<pre>
+def new_heuristic(start, goal):
+    set_of_heuristic_allowed = extract_allowed_heuristics(chromosome)
+    values = [h(start, goal) for h in set_of_heuristic_allowed]
+    return method_of_joining_heuristics(values)
+</pre>
+
+where <code>method_of_joining_heuristics</code> is one of:
+<pre>
+    method_of_joining_heuristics = {
+        'max' : max,
+        'min' : min,
+        'mean' : lambda x: sum(x)/len(x),
+        'mode' : lambda x: max(set(x), key=x.count),
+        'sum' : sum,
+        'product' : lambda x: reduce(operator.mul, x, 1),
+        'median' : lambda x: median(x),
+        'range': lambda x: max(x) - min(x),
+    }
+</pre>
+<li><strong>Selection</strong></li>
+We used <code>ranking selection</code> to select the best heuristic functions.
+
+<li> <strong>Crossover</strong> </li>
 We used <code>single point crossover</code> to create new heuristic functions. Crossover probability is 0.8.
 
-<li> Mutation </li>
-We used <code>random mutation</code> to mutate the heuristic functions. Mutation probability is 0.1.
+<li> <strong>Mutation</strong> </li>
+We used <code>bitstring mutation</code> to mutate the heuristic functions allowed. Mutation probability is 0.2.
 
-<li> Stopping Criteria </li>
-We used <code>number of generations</code> as a stopping criteria. We ran the genetic algorithm for 100 generations.
+<li> <strong>Stopping Criteria</strong> </li>
+We used <code>number of generations</code> as a stopping criteria. We ran the genetic algorithm for 30 generations.
 
-<li> Results </li>
-We ran the genetic algorithm for 100 generations and the best heuristic function we found is <code>[0.5, 0.5, 0.5, 0.5]</code> with a fitness of <code>0.001</code> and number of nodes expanded of <code>252</code>.
+<li> <strong>Results</strong> </li>
+We ran the genetic algorithm for 30 generations and the best heuristic function we found is:
+<pre>
+Best solution:   (1, 1, 0, 0, 1, 1)
+</pre>
 
-thus the best heuristic combination is <code>0.5 _manhattanDistance + 0.5_ manhattanDistance + 0.5 _manhattanDistance + 0.5_ manhattanDistance</code>
+<pre>
+Best Fitness:    1
+</pre>
 
+<pre>
+Best Cost (number of nodes expanded):    741
+</pre>
+
+<pre>
+Best solution is made of:       MAX( manhattan_distance,  euclidean_distance,  min_heuristic,  null_heuristic,  )
+</pre>
+
+thus the best heuristic combination is <code>MAX( manhattan_distance,  euclidean_distance,  min_heuristic,  null_heuristic,  )</code>
+
+</ol>
+</li>
+<li><h2>How we used it:</h2>
+In <code>searchAgents.py</code> in the function <code>cornerHeuristic</code>, we generated all the permutations of the cornerns i.e. ((c1, c2, c3, c4), (c2, c4, c1, c3) . . .) <br>
+Then for each of those permutations we used our <code>heuristic_found_by_ga_for_corners_problem</code> to calculate the total path cost of that permutation. Then we return the minimum path cost of a permutation.<br>
+Pseudo Code:
+<pre>
+min_cost = infinity
+for permutation in permutations_of_corners:
+    cost = 0
+    for i in range(len(permutations_of_corners)-1):
+        cost += heuristic_found_by_ga_for_corners_problem(perm[i], perm[i+1])
+    if cost < min_cost:
+        min_cost = cost
+</pre>
+</li>
 </ol>
 
 <h2>Test Cases</h2>
@@ -457,13 +541,29 @@ thus the best heuristic combination is <code>0.5 _manhattanDistance + 0.5_ manha
 <pre>$ python pacman.py -l mediumCorners -p AStarCornersAgent -z 0.5</pre>
 
 <li>
-Path found with total cost of 106 in 0.0 seconds
+Path found with total cost of 106 in 0.1 seconds
 </li>
 <li>
-Search nodes expanded: 502
+Search nodes expanded: 741
 </li>
 <li>
 Pacman emerges victorious! Score: 434.0
+</li>
+
+<hr>
+
+<br>
+
+<pre>$ python pacman.py -l bigCorners -p AStarCornersAgent -z 0.5</pre>
+
+<li>
+Path found with total cost of 162 in 0.2 seconds
+</li>
+<li>
+Search nodes expanded: 1725
+</li>
+<li>
+Pacman emerges victorious! Score: 378.0
 </li>
 
 <hr>
@@ -473,48 +573,22 @@ Pacman emerges victorious! Score: 434.0
 <br>
 
 <h1 id="q7">🚩 Question 7: Eating All The Dots</h1>
+<p align="center">
+<img src="./gifs/q7.gif" width="500"></img>
+</p>
 In this problem, we implemented the <code>foodHeuristic</code> function in <code>searchAgents.py</code> to return the heuristic value of the current state.
 
 We created a <code>Admissible</code> and <code>Consistent</code> heuristic function.
-
-<h2>Genetic Algorithm</h2>
-We used a genetic algorithm to find the best heuristic function.
-
-<ol>
-<li> Encoding </li>
-We encoded the heuristic function as a list of 4 values, each value represents the weight of the heuristic function for each corner.
-
-<li> Fitness Function </li>
-We used the <code>scoreEvaluationFunction</code> function to evaluate the fitness of each heuristic function. Which is <code>1/number_of_nodes_expanded</code> and thus we wanted to minimize the number of nodes expanded by maximizing the fitness.
-
-<li> Selection </li>
-We used <code>roulette wheel selection</code> to select the best heuristic functions.
-
-<li> Crossover </li>
-We used <code>single point crossover</code> to create new heuristic functions. Crossover probability is 0.8.
-
-<li> Mutation </li>
-We used <code>random mutation</code> to mutate the heuristic functions. Mutation probability is 0.1.
-
-<li> Stopping Criteria </li>
-We used <code>number of generations</code> as a stopping criteria. We ran the genetic algorithm for 100 generations.
-
-<li> Results </li>
-We ran the genetic algorithm for 100 generations and the best heuristic function we found is <code>[0.5, 0.5, 0.5, 0.5]</code> with a fitness of <code>0.001</code> and number of nodes expanded of <code>252</code>.
-
-thus the best heuristic combination is <code>0.5 _manhattanDistance + 0.5_ manhattanDistance + 0.5 _manhattanDistance + 0.5_ manhattanDistance</code>
-
-</ol>
 
 <h2>Test Cases</h2>
 
 <pre>$ python pacman.py -l trickySearch -p AStarFoodSearchAgent</pre>
 
 <li>
-Path found with total cost of 60 in 0.0 seconds
+Path found with total cost of 60 in 20.1 seconds
 </li>
 <li>
-Search nodes expanded: 5423
+Search nodes expanded: 1844
 </li>
 <li>
 Pacman emerges victorious! Score: 570
@@ -524,13 +598,7 @@ Pacman emerges victorious! Score: 570
 <pre>$ python pacman.py -l mediumSearch -p AStarFoodSearchAgent</pre>
 
 <li>
-Path found with total cost of 586 in 0.0 seconds
-</li>
-<li>
-Search nodes expanded: 4826
-</li>
-<li>
-Pacman emerges victorious! Score: 994
+Was not able to solve it in 30 seconds (i.e. timeout . . .)
 </li>
 
 <hr>
@@ -539,6 +607,9 @@ Pacman emerges victorious! Score: 994
 <br>
 
 <h1 id="q8">🚩 Question 8: Suboptimal Search</h1>
+<p align="center">
+<img src="./gifs/q8.gif" width="500"></img>
+</p>
 In this section, we created an agent  that  always  greedily  eats  the  closest  dot. Using <code>ClosestDotSearchAgent</code> in searchAgents.py, we implemented a function that finds a path to the closest dot <code>findPathToClosestDot</code>
 
 We used <code>BFS</code> to find the path to the closest dot using <code>AnyFoodSearchProblem</code> as gameState for <code>BFS</code>.
@@ -547,13 +618,25 @@ We modified in <code>AnyFoodSearchProblem</code> the function <code>isGoalState<
 
 <h2>Test Cases</h2>
 
-<pre>$ python pacman.py -l trickySearch -p AStarFoodSearchAgent</pre>
+<pre>$ python pacman.py -l bigSearch -p AStarFoodSearchAgent</pre>
 
 <li>
 Path found with total cost of 350.
 </li>
 <li>
 Pacman emerges victorious! Score: 2360
+</li>
+
+<hr>
+<br>
+<br>
+<pre>$ python pacman.py -l mediumSearch -p AStarFoodSearchAgent</pre>
+
+<li>
+Path found with total cost of 171.
+</li>
+<li>
+Pacman emerges victorious! Score: 1409
 </li>
 
 <hr>

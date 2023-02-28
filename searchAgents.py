@@ -514,6 +514,9 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
 
+def exactDistanceUsingAStar(start, goal, gameState):
+    return len(search.aStarSearch(PositionSearchProblem(gameState, start=start, goal=goal, warn=False, visualize=False), manhattanHeuristic))
+
 def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     Your heuristic for the FoodSearchProblem goes here.
@@ -550,7 +553,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     if len(food_list) == 0:
         return 0
     if len(food_list) == 1:
-        return mazeDistance(position, food_list[0], problem.startingGameState)
+        return exactDistanceUsingAStar(position, food_list[0], problem.startingGameState)
     
     closest_point = food_list[0]
     furthest_point = food_list[0]
@@ -561,35 +564,35 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     Search nodes expanded: 1844
     """
     for food in food_list:
-        maze_distance_to_closest = 0
+        exact_distance_to_closest = 0
         if str((position, closest_point)) in problem.heuristicInfo:
-            maze_distance_to_closest = problem.heuristicInfo[str((position, closest_point))]
+            exact_distance_to_closest = problem.heuristicInfo[str((position, closest_point))]
         else:
-            maze_distance_to_closest = mazeDistance(position, closest_point, problem.startingGameState)
-            problem.heuristicInfo[str((position, closest_point))] = maze_distance_to_closest
+            exact_distance_to_closest = exactDistanceUsingAStar(position, closest_point, problem.startingGameState)
+            problem.heuristicInfo[str((position, closest_point))] = exact_distance_to_closest
         
-        maze_distance_to_speculated_closest = mazeDistance(position, food, problem.startingGameState)
-        if maze_distance_to_speculated_closest < maze_distance_to_closest:
+        exact_distance_to_speculated_closest = exactDistanceUsingAStar(position, food, problem.startingGameState)
+        if exact_distance_to_speculated_closest < exact_distance_to_closest:
             closest_point = food
-            problem.heuristicInfo[str((position, closest_point))] = maze_distance_to_speculated_closest
+            problem.heuristicInfo[str((position, closest_point))] = exact_distance_to_speculated_closest
 
         
-        maze_distance_to_furthest = 0
+        exact_distance_to_furthest = 0
         if str((position, furthest_point)) in problem.heuristicInfo:
-            maze_distance_to_furthest = problem.heuristicInfo[str((position, furthest_point))]
+            exact_distance_to_furthest = problem.heuristicInfo[str((position, furthest_point))]
         else:
-            maze_distance_to_furthest = mazeDistance(position, furthest_point, problem.startingGameState)
-            problem.heuristicInfo[str((position, furthest_point))] = maze_distance_to_furthest
+            exact_distance_to_furthest = exactDistanceUsingAStar(position, furthest_point, problem.startingGameState)
+            problem.heuristicInfo[str((position, furthest_point))] = exact_distance_to_furthest
 
-        maze_distance_to_speculated_furthest = mazeDistance(position, food, problem.startingGameState)
-        if maze_distance_to_speculated_furthest > maze_distance_to_furthest:
+        exact_distance_to_speculated_furthest = exactDistanceUsingAStar(position, food, problem.startingGameState)
+        if exact_distance_to_speculated_furthest > exact_distance_to_furthest:
             furthest_point = food
-            problem.heuristicInfo[str((position, furthest_point))] = maze_distance_to_speculated_furthest
+            problem.heuristicInfo[str((position, furthest_point))] = exact_distance_to_speculated_furthest
 
-    return problem.heuristicInfo[str((position, closest_point))] + mazeDistance(closest_point, furthest_point, problem.startingGameState)
+    return problem.heuristicInfo[str((position, closest_point))] + exactDistanceUsingAStar(closest_point, furthest_point, problem.startingGameState)
 
     """
-    INCOSISTENT
+    INCOSISTENT DO NOT USE IT 
     Path found with total cost of 60 in 6.3 seconds
     Search nodes expanded: 2261
     for food in food_list:
