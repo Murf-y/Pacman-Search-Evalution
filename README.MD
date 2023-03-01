@@ -606,10 +606,10 @@ Best solution is made of:       MAX( manhattan_distance,  euclidean_distance,  d
 <pre>$ python pacman.py -l trickySearch -p AStarFoodSearchAgent</pre>
 
 <li>
-Path found with total cost of 60 in 20.1 seconds
+Path found with total cost of 60 in 2.4 seconds
 </li>
 <li>
-Search nodes expanded: 1844
+Search nodes expanded: 4987
 </li>
 <li>
 Pacman emerges victorious! Score: 570
