@@ -517,7 +517,9 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchType = FoodSearchProblem
 
 def exactDistanceUsingAStar(start, goal, gameState):
-    return len(search.aStarSearch(PositionSearchProblem(gameState, start=start, goal=goal, warn=False, visualize=False), manhattanHeuristic))
+    def h(start, problem):
+        return heuristic_found_by_ga_for_food_problem(start, problem.goal)
+    return len(search.aStarSearch(PositionSearchProblem(gameState, start=start, goal=goal, warn=False, visualize=False), h))
 
 def heuristic_found_by_ga_for_food_problem(start, goal):
     """
@@ -585,7 +587,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
 
 
     """
-    Path found with total cost of 60 in 1.6 seconds
+    Path found with total cost of 60 in 4.4 seconds
     Search nodes expanded: 4987
     """
     for food in food_list:

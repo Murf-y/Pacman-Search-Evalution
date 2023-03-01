@@ -582,12 +582,23 @@ In this problem, we implemented the <code>foodHeuristic</code> function in <code
 We created a <code>Admissible</code> and <code>Consistent</code> heuristic function.
 
 <h2>How it Works:</h2>
-We created a <code>exactDistanceUsingAStar(start, goal)</code> function that returns the actual cost of the path from the start to the goal using the <code>AStarSearch</code> algorithm and manhattan distance<br>
+We also used the genetic algorithm to find the best heuristic function for this problem. <br>
+The function is <code>heuristic_found_by_ga_for_food_problem</code> <br>
+We created a <code>exactDistanceUsingAStar(start, goal)</code> function that returns the actual cost of the path from the start to the goal using the <code>AStarSearch</code> algorithm and <code>heuristic_found_by_ga_for_food_problem</code><br>
 Then we found <code>closest_food</code> and <code>furthest_food</code> using <code>heuristic_found_by_ga_for_food_problem</code> <br>
 Then we returned the heuristic value as:
 
 <pre>
-    return exactDistance(start, closest_food) + heuristic_found_by_ga_for_corners_problem(closest_food, furthest_food)
+    return exactDistance(start, closest_food) + heuristic_found_by_ga_for_food_problem(closest_food, furthest_food)
+</pre>
+
+<h2>Genetic Algorithm Results:</h2>
+We ran the genetic algorithm for 30 generations and the best heuristic function we found is:
+<pre>
+Best solution:   (1, 1, 1, 1, 1, 0)
+Best Fitness:    24
+Best Cost (number of nodes expanded):    4089
+Best solution is made of:       MAX( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic,  min_heuristic,  )
 </pre>
 
 <h2>Test Cases</h2>
