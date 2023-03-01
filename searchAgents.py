@@ -44,7 +44,9 @@ import search
 import pacman
 from typing import List, Tuple, Any
 import itertools
+from statistics import mode, mean, median, stdev, variance, quantiles
 import math
+from heuristics import *
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -385,7 +387,7 @@ class CornersProblem(search.SearchProblem):
 
 def heuristic_found_by_ga_for_corners_problem(start, goal):
     """
-    A heuristic for the CornersProblem found by running: python genetic_algorithm.py
+    A heuristic for the CornersProblem found by running: python genetic_algorithm.py -p CornersProblem -l mediumCornerns
 
     result:
 
@@ -517,6 +519,29 @@ class AStarFoodSearchAgent(SearchAgent):
 def exactDistanceUsingAStar(start, goal, gameState):
     return len(search.aStarSearch(PositionSearchProblem(gameState, start=start, goal=goal, warn=False, visualize=False), manhattanHeuristic))
 
+def heuristic_found_by_ga_for_food_problem(start, goal):
+    """
+    A heuristic for the FoodSearchProblem found by running: python genetic_algorithm.py -p FoodSearchProblem -l trickySearch
+
+    result:
+
+    MAX( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic,  min_heuristic,  )
+    """
+
+    x1, y1 = start
+    x2, y2 = goal
+
+    manhattan = manhattan_distance(start, goal)
+    diagonal = diagonal_distance(start, goal)
+    null_h = null_heuristic(start, goal)   
+    euclidean = euclidean_distance(start, goal)
+    max_h = max_heuristic(start, goal)
+    min_h = min_heuristic(start, goal)
+    euclidean_sq = euclidean_squared(start, goal)
+    mean_h = mean_heuristic(start, goal)
+
+    return max(manhattan, euclidean, diagonal, max_h, min_h)
+    
 def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     Your heuristic for the FoodSearchProblem goes here.
@@ -553,7 +578,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     if len(food_list) == 0:
         return 0
     if len(food_list) == 1:
-        return heuristic_found_by_ga_for_corners_problem(position, food_list[0])
+        return heuristic_found_by_ga_for_food_problem(position, food_list[0])
     
     closest_point = food_list[0]
     furthest_point = food_list[0]
@@ -568,10 +593,10 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
         if str((position, closest_point)) in problem.heuristicInfo:
             estimated_distance_to_closest = problem.heuristicInfo[str((position, closest_point))]
         else:
-            estimated_distance_to_closest = heuristic_found_by_ga_for_corners_problem(position, closest_point)
+            estimated_distance_to_closest = heuristic_found_by_ga_for_food_problem(position, closest_point)
             problem.heuristicInfo[str((position, closest_point))] = estimated_distance_to_closest
         
-        estimated_distance_to_speculated_closest = heuristic_found_by_ga_for_corners_problem(position, food)
+        estimated_distance_to_speculated_closest = heuristic_found_by_ga_for_food_problem(position, food)
         if estimated_distance_to_speculated_closest < estimated_distance_to_closest:
             closest_point = food
             problem.heuristicInfo[str((position, closest_point))] = estimated_distance_to_speculated_closest
@@ -580,16 +605,16 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
         if str((position, furthest_point)) in problem.heuristicInfo:
             estimated_distance_to_furthest = problem.heuristicInfo[str((position, furthest_point))]
         else:
-            estimated_distance_to_furthest = heuristic_found_by_ga_for_corners_problem(position, furthest_point)
+            estimated_distance_to_furthest = heuristic_found_by_ga_for_food_problem(position, furthest_point)
             problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_furthest
         
-        estimated_distance_to_speculated_furthest = heuristic_found_by_ga_for_corners_problem(position, food)
+        estimated_distance_to_speculated_furthest = heuristic_found_by_ga_for_food_problem(position, food)
         if estimated_distance_to_speculated_furthest > estimated_distance_to_furthest:
             furthest_point = food
             problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_speculated_furthest
     
     # TODO remove exactDistance and use a heuristic instead (wait for GA RESULTS)
-    return exactDistanceUsingAStar(position, closest_point, problem.startingGameState) + heuristic_found_by_ga_for_corners_problem(closest_point, furthest_point)
+    return exactDistanceUsingAStar(position, closest_point, problem.startingGameState) + heuristic_found_by_ga_for_food_problem(closest_point, furthest_point)
 
 
 

@@ -10,6 +10,7 @@ Original file is located at
 """
 
 import os
+import sys
 import numpy as np
 from statistics import mode, mean, median, stdev, variance, quantiles
 import math
@@ -19,37 +20,11 @@ from functools import reduce
 import operator
 
 from search import aStarSearch
-from searchAgents import CornersProblem, SearchAgent, FoodSearchProblem
+from searchAgents import CornersProblem, SearchAgent, FoodSearchProblem, PositionSearchProblem
 import pacman
 import layout
 
-"""# Heuristics"""
-
-def manhattan_distance(current, goal):
-    return abs(current[0] - goal[0]) + abs(current[1] - goal[1])
-
-def euclidean_distance(current, goal):
-    return math.sqrt((current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2)
-
-def max_heuristic(current, goal):
-    return max(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
-
-def min_heuristic(current, goal):
-    return min(abs(current[0] - goal[0]), abs(current[1] - goal[1]))
-
-def diagonal_distance(current, goal):
-    dx = abs(current[0] - goal[0])
-    dy = abs(current[1] - goal[1])
-    return (dx + dy) + (math.sqrt(2) - 2) * min(dx, dy)
-
-def euclidean_squared(current, goal):
-    return (current[0] - goal[0]) ** 2 + (current[1] - goal[1]) ** 2
-
-def null_heuristic(current, goal):
-    return 0
-
-def mean_heuristic(current, goal):
-    return (abs(current[0] - goal[0]) + abs(current[1] - goal[1]))/2
+from heuristics import *
 
 class GeneticAlgorithm:
 
@@ -101,7 +76,7 @@ class GeneticAlgorithm:
     
     def fitness_func(self, solution):
         # should maximize
-        c = 3
+        c = 5
         epsilon = 10**(-c)
 
         gameState = pacman.GameState()
@@ -165,6 +140,11 @@ class GeneticAlgorithm:
             """
             SAME AS foodHeuristic but for a geneticAlgorithm
             """
+            def exactDistanceUsingAStar(start, goal, gameState):
+                def h(start, problem):
+                    return wrapper_function(start, problem.goal)
+                return len(aStarSearch(PositionSearchProblem(gameState, start=start, goal=goal, warn=False, visualize=False), h))
+
             if self.game_to_train_on.problemClass == FoodSearchProblem:
                 position, foodGrid = state
 
@@ -203,7 +183,7 @@ class GeneticAlgorithm:
                     if estimated_distance_to_speculated_furthest > estimated_distance_to_furthest:
                         furthest_point = food
                         problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_speculated_furthest
-                return wrapper_function(position, closest_point) + wrapper_function(closest_point, furthest_point)
+                return exactDistanceUsingAStar(position, closest_point, problem.startingGameState) + wrapper_function(closest_point, furthest_point)
             
         return new_heuristic
 
@@ -400,7 +380,32 @@ class GaAgentFood(SearchAgent):
         self.searchFunction = lambda prob: aStarSearch(prob, heuristic)
         self.searchType = FoodSearchProblem
 
-def main():
+
+def default(str):
+    return str + ' [Default: %default]'
+def main( argv ):
+    from optparse import OptionParser
+    usageStr = """
+    USAGE:      python genetic_algorithm.py <options>
+    EXAMPLES:   (1) python genetic_algorithm.py -p FoodSearchProblem -l trickySearch
+                    - starts genetic algorithm on a tricky food search problem
+                (2) python genetic_algorithm.py -p CornersProblem -l mediumCorners
+    """
+    parser = OptionParser(usageStr)
+    parser.add_option('-p', '--problem', dest='problem',
+                      help=default('the Problem to train the gentic algorithm on'),
+                      metavar='TYPE', default='CornersProblem')
+    parser.add_option('-l', '--layout', dest='layout',
+                      help=default('the LAYOUT_FILE from which to load the map layout'),
+                      metavar='LAYOUT_FILE', default='mediumCorners')
+    options, otherjunk = parser.parse_args(argv)
+    if len(otherjunk) != 0:
+        raise Exception('Command line input not understood: ' + str(otherjunk))
+    
+
+    l = layout.getLayout( options.layout )
+    if l == None: raise Exception("The layout " + options.layout + " cannot be found")
+
     HEURISTICS_LIST = [
         manhattan_distance,
         euclidean_distance,
@@ -420,12 +425,11 @@ def main():
     }
     
 
-    # game_to_train_on = GameWrapper("mediumCorners", CornersProblem, GaAgentCornerns)
+    game_to_train_on = GameWrapper(options.layout, CornersProblem if options.problem == "CornersProblem" else FoodSearchProblem, GaAgentCornerns if options.problem == CornersProblem  else GaAgentFood)
 
-    # OR
-
-    game_to_train_on = GameWrapper("trickySearch", FoodSearchProblem, GaAgentFood)
-
+    print("Using problem: " + options.problem)
+    print("Using layout: " + options.layout)
+    
     for method in method_of_joining_heuristics:
         ga = GeneticAlgorithm(
             n_genes = len(HEURISTICS_LIST),
@@ -448,7 +452,7 @@ def main():
         print('\nBest solution:\t', best_solution)
 
         print('\nBest Fitness:\t', round(best_fitness))
-        print('\nBest Cost (number of nodes expanded):\t', round(1/best_fitness * (10**3)))
+        print('\nBest Cost (number of nodes expanded):\t', round(1/best_fitness * (10**5)))
 
         print("\nBest solution is made of:\t", end="")
         print(method.upper()
@@ -459,4 +463,4 @@ def main():
         print(")")
         print("\n\n----------------------------------\n\n")
 if __name__ == "__main__":
-    main()
+    main( sys.argv[1:] )
