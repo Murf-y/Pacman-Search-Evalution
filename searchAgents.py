@@ -527,7 +527,7 @@ def heuristic_found_by_ga_for_food_problem(start, goal):
 
     result:
 
-    MAX( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic,  min_heuristic,  )
+   MAX( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic  )
     """
 
     x1, y1 = start
@@ -535,14 +535,14 @@ def heuristic_found_by_ga_for_food_problem(start, goal):
 
     manhattan = manhattan_distance(start, goal)
     diagonal = diagonal_distance(start, goal)
-    null_h = null_heuristic(start, goal)   
+    # null_h = null_heuristic(start, goal)   
     euclidean = euclidean_distance(start, goal)
     max_h = max_heuristic(start, goal)
-    min_h = min_heuristic(start, goal)
-    euclidean_sq = euclidean_squared(start, goal)
-    mean_h = mean_heuristic(start, goal)
+    # min_h = min_heuristic(start, goal)
+    # euclidean_sq = euclidean_squared(start, goal)
+    # mean_h = mean_heuristic(start, goal)
 
-    return max(manhattan, euclidean, diagonal, max_h, min_h)
+    return max(manhattan, euclidean, diagonal, max_h)
     
 def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """

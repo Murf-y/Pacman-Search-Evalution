@@ -83,7 +83,6 @@ class GeneticAlgorithm:
         lay = layout.getLayout(self.game_to_train_on.layoutName)
         gameState.initialize(lay, 0)
         problem = self.game_to_train_on.problemClass(gameState)
-        state = problem.getStartState()
 
         set_of_h = self.get_heuristic_set_from_ind(individual=solution)
         new_heuristic = self.get_new_function_from_set_of_h(set_of_h)
