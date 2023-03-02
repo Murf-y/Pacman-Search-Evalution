@@ -435,7 +435,7 @@ In <code>genetic_algorithm.py</code> you can modify on which maze you want to tr
 <br>
 To run:
 <pre>python install -r requirements.txt</pre>
-<pre>python genetic_algorithm.py</pre>
+<pre>python genetic_algorithm.py -p CornersProblem -l mediumCorners</pre>
 
 <h3><strong>How it works:</strong></h3>
 <ol>
@@ -481,8 +481,6 @@ where <code>method_of_joining_heuristics</code> is one of:
         'min' : min,
         'mean' : lambda x: sum(x)/len(x),
         'mode' : lambda x: max(set(x), key=x.count),
-        'sum' : sum,
-        'product' : lambda x: reduce(operator.mul, x, 1),
         'median' : lambda x: median(x),
         'range': lambda x: max(x) - min(x),
     }
@@ -589,15 +587,20 @@ Then we found <code>closest_food</code> and <code>furthest_food</code> using <co
 Then we returned the heuristic value as:
 
 <pre>
-    return exactDistance(start, closest_food) + heuristic_found_by_ga_for_food_problem(closest_food, furthest_food)
+    return exactDistanceUsingAStar(start, closest_food) + heuristic_found_by_ga_for_food_problem(closest_food, furthest_food)
 </pre>
 
 <h2>Genetic Algorithm Results:</h2>
-We ran the genetic algorithm for 30 generations and the best heuristic function we found is:
+We ran the genetic algorithm for 30 generations using <br>
+<pre>python install -r requirements.txt</pre>
+<pre>
+python genetic_algorithm.py -p FoodSearchProblem -l trickySearch
+</pre>
+and the best heuristic function we found is:
 <pre>
 Best solution:   (1, 1, 1, 1, 1, 0)
 Best Fitness:    24
-Best Cost (number of nodes expanded):    4089
+Best Cost (number of nodes expanded):    4987
 Best solution is made of:       MAX( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic,  min_heuristic,  )
 </pre>
 
