@@ -500,7 +500,7 @@ We used <code>number of generations</code> as a stopping criteria. We ran the ge
 <li> <strong>Results</strong> </li>
 We ran the genetic algorithm for 30 generations and the best heuristic function we found is:
 <pre>
-Best solution:   (1, 1, 0, 0, 1, 1)
+Best solution:   (1, 1, 1, 1, 1, 1)
 </pre>
 
 <pre>
@@ -512,10 +512,13 @@ Best Cost (number of nodes expanded):    741
 </pre>
 
 <pre>
-Best solution is made of:       MAX( manhattan_distance,  euclidean_distance,  min_heuristic,  null_heuristic,  )
+Best solution is made of:       RANGE( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic,  min_heuristic,  null_heuristic,  )
 </pre>
-
-thus the best heuristic combination is <code>MAX( manhattan_distance,  euclidean_distance,  min_heuristic,  null_heuristic,  )</code>
+Where
+<pre>
+RANGE = lambda x: max(x) - min(x)
+</pre>
+thus the best heuristic combination is <code>RANGE( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic,  min_heuristic,  null_heuristic,  )</code>
 
 </ol>
 </li>
@@ -598,10 +601,10 @@ python genetic_algorithm.py -p FoodSearchProblem -l trickySearch
 </pre>
 and the best heuristic function we found is:
 <pre>
-Best solution:   (1, 1, 1, 1, 1, 0)
+Best solution:   (0, 0, 1, 1, 1, 0)
 Best Fitness:    24
-Best Cost (number of nodes expanded):    4987
-Best solution is made of:       MAX( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic,  min_heuristic,  )
+Best Cost (number of nodes expanded):    4089
+Best solution is made of:       MAX( diagonal_distance,  max_heuristic,  min_heuristic,  )
 </pre>
 
 <h2>Test Cases</h2>
