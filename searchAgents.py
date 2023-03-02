@@ -391,22 +391,21 @@ def heuristic_found_by_ga_for_corners_problem(start, goal):
 
     result:
 
-    MAX( manhattan_distance,  euclidean_distance,  min_heuristic,  null_heuristic,  )
+    RANGE( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic,  min_heuristic,  null_heuristic,  )
     """
 
     x1, y1 = start
     x2, y2 = goal
 
-    manhattan_distance = abs(x1 - x2) + abs(y1 - y2)
-    euclidean_distance = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
-    diagonal_distance = abs(x1 - x2) + abs(y1 - y2)
-    max_heuristic = max(abs(x1 - x2), abs(y1 - y2))
-    min_heuristic = min(abs(x1 - x2), abs(y1 - y2))
-    mean_heuristic = (abs(x1 - x2) + abs(y1 - y2)) / 2
-    euclidean_squared = (x1 - x2) ** 2 + (y1 - y2) ** 2
-    null_heuristic = 0
+    manhattan = manhattan_distance(start, goal)
+    euclidean = euclidean_distance(start, goal)
+    diagonal = diagonal_distance(start, goal)
+    max_h = max_heuristic(start, goal)
+    min_h = min_heuristic(start, goal)
+    null_h = null_heuristic(start, goal)
 
-    return max(manhattan_distance, euclidean_distance, min_heuristic, null_heuristic)
+    range_func = lambda x: max(x) - min(x)
+    return range_func([manhattan, euclidean, diagonal, max_h, min_h, null_h])
     
 def cornersHeuristic(state: Any, problem: CornersProblem):
     """
@@ -527,22 +526,20 @@ def heuristic_found_by_ga_for_food_problem(start, goal):
 
     result:
 
-   MAX( manhattan_distance,  euclidean_distance,  diagonal_distance,  max_heuristic  )
+    MAX( diagonal_distance,  max_heuristic,  min_heuristic,  )
     """
 
     x1, y1 = start
     x2, y2 = goal
 
-    manhattan = manhattan_distance(start, goal)
+    # manhattan = manhattan_distance(start, goal)
+    # euclidean = euclidean_distance(start, goal)
     diagonal = diagonal_distance(start, goal)
-    # null_h = null_heuristic(start, goal)   
-    euclidean = euclidean_distance(start, goal)
     max_h = max_heuristic(start, goal)
-    # min_h = min_heuristic(start, goal)
-    # euclidean_sq = euclidean_squared(start, goal)
-    # mean_h = mean_heuristic(start, goal)
+    min_h = min_heuristic(start, goal)
+    # null_h = null_heuristic(start, goal)
 
-    return max(manhattan, euclidean, diagonal, max_h)
+    return max(diagonal, max_h, min_h)
     
 def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
@@ -587,8 +584,8 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
 
 
     """
-    Path found with total cost of 60 in 4.4 seconds
-    Search nodes expanded: 4987
+    Path found with total cost of 60 in 1.4 seconds
+    Search nodes expanded: 4089
     """
     for food in food_list:
         estimated_distance_to_closest = 0
@@ -615,7 +612,6 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
             furthest_point = food
             problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_speculated_furthest
     
-    # TODO remove exactDistance and use a heuristic instead (wait for GA RESULTS)
     return exactDistanceUsingAStar(position, closest_point, problem.startingGameState) + heuristic_found_by_ga_for_food_problem(closest_point, furthest_point)
 
 

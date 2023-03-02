@@ -91,6 +91,7 @@ class GeneticAlgorithm:
         agent.searchFunction(problem)
         cost = problem._expanded
 
+        print("Individual: ", solution, " Cost: ", cost)
         if cost == 0:
             return epsilon
         else:
@@ -432,14 +433,14 @@ def main( argv ):
     for method in method_of_joining_heuristics:
         ga = GeneticAlgorithm(
             n_genes = len(HEURISTICS_LIST),
-            n_iterations = 20,
+            n_iterations = 5,
             lchrom = len(HEURISTICS_LIST), 
             pcross = 0.8, 
             pmutation = 0.3, 
             crossover_type = 'one_point', 
             mutation_type = 'bitstring', 
             selection_type = 'ranking', 
-            popsize = 20,
+            popsize = 10,
             n_elites = 2,
             random_state = 11,
             game_to_train_on = game_to_train_on,
