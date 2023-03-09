@@ -428,6 +428,15 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     unvisited_corners = problem.unvistedCorners(state)
     
         
+
+    """
+    How it works:
+    find the unvisited corners
+    find the permutations of the unvisited corners (e.g. (c2,c4,c3,c1) means that c2 is the first corner to visit, then c4, then c3, then c1)
+    for each permutation, calculate the cost of the path using the heuristic found by GA
+    return the minimum cost
+    """
+
     """
     Path found with total cost of 106 in 0.1 seconds
     Search nodes expanded: 741
@@ -450,6 +459,7 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
         if cost < min_cost:
             min_cost = cost
     return min_cost
+
 
 
 
@@ -516,6 +526,10 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchType = FoodSearchProblem
 
 def exactDistanceUsingAStar(start, goal, gameState):
+    """
+    A function that uses A* to find the exact distance between two points
+    """
+
     def h(start, problem):
         return heuristic_found_by_ga_for_food_problem(start, problem.goal)
     return len(search.aStarSearch(PositionSearchProblem(gameState, start=start, goal=goal, warn=False, visualize=False), h))
@@ -542,33 +556,7 @@ def heuristic_found_by_ga_for_food_problem(start, goal):
     return max(diagonal, max_h, min_h)
     
 def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
-    """
-    Your heuristic for the FoodSearchProblem goes here.
 
-    This heuristic must be consistent to ensure correctness.  First, try to come
-    up with an admissible heuristic; almost all admissible heuristics will be
-    consistent as well.
-
-    If using A* ever finds a solution that is worse uniform cost search finds,
-    your heuristic is *not* consistent, and probably not admissible!  On the
-    other hand, inadmissible or inconsistent heuristics may find optimal
-    solutions, so be careful.
-
-    The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a Grid
-    (see game.py) of either True or False. You can call foodGrid.asList() to get
-    a list of food coordinates instead.
-
-    If you want access to info like walls, capsules, etc., you can query the
-    problem.  For example, problem.walls gives you a Grid of where the walls
-    are.
-
-    If you want to *store* information to be reused in other calls to the
-    heuristic, there is a dictionary called problem.heuristicInfo that you can
-    use. For example, if you only want to count the walls once and store that
-    value, try: problem.heuristicInfo['wallCount'] = problem.walls.count()
-    Subsequent calls to this heuristic can access
-    problem.heuristicInfo['wallCount']
-    """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
 
@@ -582,6 +570,13 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     closest_point = food_list[0]
     furthest_point = food_list[0]
 
+    """
+    How it works:
+    1. Find the closest point using heuristic found by GA
+    2. Find the furthest point using heuristic found by GA
+    3. use caching to store previous results (use problem.heuristicInfo to store the results)
+    4. return the sum of the EXACT DISTANCE from pacman to the closest point and the estimate cost (using heuristic found by GA) from the closest point to the furthest point
+    """
 
     """
     Path found with total cost of 60 in 1.4 seconds
@@ -613,7 +608,6 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
             problem.heuristicInfo[str((position, furthest_point))] = estimated_distance_to_speculated_furthest
     
     return exactDistanceUsingAStar(position, closest_point, problem.startingGameState) + heuristic_found_by_ga_for_food_problem(closest_point, furthest_point)
-
 
 
 class ClosestDotSearchAgent(SearchAgent):
