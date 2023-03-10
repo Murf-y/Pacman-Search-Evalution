@@ -267,12 +267,7 @@ class GeneticAlgorithm:
             child1 = [parent1[i] if temp[i] > t else parent2[i] for i in range(len(temp))]
             child2 = [parent2[i] if temp[i] > t else parent1[i] for i in range(len(temp))]
             children = [child1, child2]
-               
-    
-        else:
-            child1 = parent1
-            child2 = parent2
-            children = [child1, child2]
+
         return children
     
 
