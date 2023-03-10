@@ -645,7 +645,7 @@ We modified in <code>AnyFoodSearchProblem</code> the function <code>isGoalState<
 
 <h2>Test Cases</h2>
 
-<pre>$ python pacman.py -l bigSearch -p AStarFoodSearchAgent</pre>
+<pre>$ python pacman.py -l bigSearch -p ClosestDotSearchAgent</pre>
 
 <li>
 Path found with total cost of 350.
@@ -657,7 +657,7 @@ Pacman emerges victorious! Score: 2360
 <hr>
 <br>
 <br>
-<pre>$ python pacman.py -l mediumSearch -p AStarFoodSearchAgent</pre>
+<pre>$ python pacman.py -l mediumSearch -p ClosestDotSearchAgent</pre>
 
 <li>
 Path found with total cost of 171.
