@@ -91,7 +91,6 @@ class GeneticAlgorithm:
         agent.searchFunction(problem)
         cost = problem._expanded
 
-        print("Individual: ", solution, " Cost: ", cost)
         if cost == 0:
             return epsilon
         else:
@@ -265,14 +264,14 @@ class GeneticAlgorithm:
            
             t = np.random.rand()
             temp = np.random.rand(lchrom)
-            child1 = self.__mutation([parent1[i] if temp[i] > t else parent2[i] for i in range(len(temp)) ], mutation_type, pmutation, nmutation)
-            child2 = self.__mutation([parent2[i] if temp[i] > t else parent1[i] for i in range(len(temp)) ], mutation_type, pmutation, nmutation)
+            child1 = [parent1[i] if temp[i] > t else parent2[i] for i in range(len(temp))]
+            child2 = [parent2[i] if temp[i] > t else parent1[i] for i in range(len(temp))]
             children = [child1, child2]
                
     
         else:
-            child1 = self.__mutation(parent1, mutation_type, pmutation, nmutation)
-            child2 = self.__mutation(parent2, mutation_type, pmutation, nmutation)
+            child1 = parent1
+            child2 = parent2
             children = [child1, child2]
         return children
     
